@@ -1,14 +1,15 @@
 import {
   Body,
   Controller,
-  Get,
+  Get, HttpCode, HttpStatus,
   Param,
-  ParseIntPipe,
+  ParseIntPipe, Patch,
   Post,
   Query,
 } from "@nestjs/common";
 import { User } from "@prisma/client";
 import { CreateUserDto } from "./dtos";
+import { UpdateUserDto } from "./dtos/update-user.dto";
 import { UsersService } from "./users.service";
 
 @Controller("/users")
@@ -33,5 +34,14 @@ export class UsersController {
   @Post()
   public async createUser(@Body() userDto: CreateUserDto): Promise<User> {
     return this.usersService.create(userDto);
+  }
+
+  @Patch(":id")
+  @HttpCode(HttpStatus.OK)
+  public async updateUser(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() userDto: UpdateUserDto,
+  ): Promise<User> {
+    return this.usersService.update(id, userDto);
   }
 }

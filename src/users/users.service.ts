@@ -9,6 +9,14 @@ export class UsersService {
     private readonly prismaService: PrismaService,
   ) {}
 
+  public async users(email?: string): Promise<User[]> {
+    return this.prismaService.user.findMany({
+      where: {
+        email,
+      },
+    });
+  }
+
   public async create(userDto): Promise<User> {
     userDto.password = await bcrypt.hash(userDto.password, 10);
     return this.prismaService.user.create({

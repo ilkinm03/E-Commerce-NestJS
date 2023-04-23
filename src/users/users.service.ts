@@ -17,6 +17,14 @@ export class UsersService {
     });
   }
 
+  public async user(id: number): Promise<User> {
+    return this.prismaService.user.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
+
   public async create(userDto): Promise<User> {
     userDto.password = await bcrypt.hash(userDto.password, 10);
     return this.prismaService.user.create({

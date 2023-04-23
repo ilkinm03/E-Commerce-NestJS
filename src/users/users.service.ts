@@ -42,4 +42,12 @@ export class UsersService {
       data: userDto,
     });
   }
+
+  public async delete(id: number): Promise<User> {
+    return this.prismaService.user.delete({
+      where: {
+        id,
+      },
+    });
+  }
 }

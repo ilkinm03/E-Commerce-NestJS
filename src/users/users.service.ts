@@ -9,6 +9,8 @@ export class UsersService {
   ) {}
 
   public async create(userDto): Promise<User> {
-    return this.prismaService.user.create(userDto);
+    return this.prismaService.user.create({
+      data: userDto,
+    });
   }
 }

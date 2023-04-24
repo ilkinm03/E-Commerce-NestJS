@@ -11,9 +11,9 @@ import { User } from "@prisma/client";
 import { Serialize } from "../common/decorators";
 import {
   CreateUserDto,
+  UpdateUserDto,
   UserDto
 } from "./dtos";
-import { UpdateUserDto } from "./dtos/update-user.dto";
 import { UsersService } from "./users.service";
 
 @Controller("/users")

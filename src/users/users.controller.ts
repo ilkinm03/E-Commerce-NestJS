@@ -8,11 +8,16 @@ import {
   Query,
 } from "@nestjs/common";
 import { User } from "@prisma/client";
-import { CreateUserDto } from "./dtos";
+import { Serialize } from "../common/decorators";
+import {
+  CreateUserDto,
+  UserDto
+} from "./dtos";
 import { UpdateUserDto } from "./dtos/update-user.dto";
 import { UsersService } from "./users.service";
 
 @Controller("/users")
+@Serialize(UserDto)
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,

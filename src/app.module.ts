@@ -1,10 +1,9 @@
 import { Global, Module, ValidationPipe } from "@nestjs/common";
 import { APP_FILTER, APP_PIPE } from "@nestjs/core";
-import { PrismaClientExceptionFilter } from "../dist/common/filters";
+import { PrismaClientExceptionsFilter } from "./common/filters";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { PrismaModule } from "./prisma/prisma.module";
-import { PrismaService } from "./prisma/prisma.service";
 import { UsersModule } from "./users/users.module";
 
 @Global()
@@ -15,7 +14,7 @@ import { UsersModule } from "./users/users.module";
     AppService,
     {
       provide: APP_FILTER,
-      useClass: PrismaClientExceptionFilter,
+      useClass: PrismaClientExceptionsFilter,
     },
     {
       provide: APP_PIPE,

@@ -60,4 +60,12 @@ export class AuthService {
       refreshToken,
     };
   }
+
+  private async updateRefreshToken(
+    userId: number,
+    refreshToken: string,
+  ): Promise<void> {
+    const hashedRefreshToken: string = await bcrypt.hash(refreshToken, 10);
+    await this.usersService.updateRefreshToken(userId, hashedRefreshToken);
+  }
 }

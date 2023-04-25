@@ -19,7 +19,7 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  public async signup(signupDto: SignupDto): Promise<User> {
+  public async signup(signupDto: SignupDto): Promise<ITokens> {
     const {
       password,
       confirm_password,
@@ -34,7 +34,11 @@ export class AuthService {
         password: hashedPassword,
         ...userData,
       });
-      return user;
+      const tokens: ITokens = await this.getTokens({
+        sub: user.id,
+        email: user.email,
+      });
+      return tokens;
     } catch (error) {
       throw new ConflictException("email is already in use");
     }

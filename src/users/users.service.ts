@@ -46,6 +46,22 @@ export class UsersService {
     });
   }
 
+  public async updateRefreshToken(
+    id: number,
+    refresh_token: string,
+  ): Promise<User> {
+    return this.prismaService.user.update({
+      where: {
+        id,
+      },
+      data: {
+        refresh_token: {
+          set: refresh_token,
+        },
+      },
+    });
+  }
+
   public async delete(id: number): Promise<User> {
     return this.prismaService.user.delete({
       where: {
@@ -53,4 +69,5 @@ export class UsersService {
       },
     });
   }
+
 }

@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { User } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateUserDto, UpdateUserDto } from "./dtos";
 
@@ -58,6 +58,20 @@ export class UsersService {
         },
       },
     });
+  }
+
+  public async removeRefreshToken(id: number): Promise<Prisma.BatchPayload> {
+    return this.prismaService.user.updateMany({
+      where: {
+        id,
+        refresh_token: {
+          not: null,
+        },
+      },
+      data: {
+        refresh_token: null
+      }
+    })
   }
 
   public async delete(id: number): Promise<User> {

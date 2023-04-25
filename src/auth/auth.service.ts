@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from "@nestjs/common";
 import { User } from "@prisma/client";
 import * as bcrypt from "bcrypt";
 import { UsersService } from "../users/users.service";
@@ -15,15 +19,19 @@ export class AuthService {
       password,
       confirm_password,
       ...userData
-    } = signupDto;
+    }: SignupDto = signupDto;
     if (password !== confirm_password) {
       throw new BadRequestException("passwords not match");
     }
-    const hashedPassword: string = await bcrypt.hash(password, 10);
-    const user: User = await this.usersService.create({
-      password: hashedPassword,
-      ...userData,
-    });
-    return user;
+    try {
+      const hashedPassword: string = await bcrypt.hash(password, 10);
+      const user: User = await this.usersService.create({
+        password: hashedPassword,
+        ...userData,
+      });
+      return user;
+    } catch (error) {
+      throw new ConflictException("email is already in use");
+    }
   }
 }

@@ -38,6 +38,7 @@ export class AuthService {
         sub: user.id,
         email: user.email,
       });
+      await this.updateRefreshToken(user.id, tokens.refreshToken);
       return tokens;
     } catch (error) {
       throw new ConflictException("email is already in use");

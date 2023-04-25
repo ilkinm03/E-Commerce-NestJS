@@ -8,7 +8,7 @@ import { User } from "@prisma/client";
 import * as bcrypt from "bcrypt";
 import { ConfigService } from "../config/config.service";
 import { UsersService } from "../users/users.service";
-import { SignupDto } from "./dtos";
+import { LoginDto, SignupDto } from "./dtos";
 import { ITokens, TokenPayload } from "./interfaces";
 
 @Injectable()
@@ -43,6 +43,26 @@ export class AuthService {
     } catch (error) {
       throw new ConflictException("email is already in use");
     }
+  }
+
+  public async login(loginDto: LoginDto): Promise<ITokens> {
+    const [user]: User[] = await this.usersService.users(loginDto.email);
+    if (!user) {
+      throw new BadRequestException("email or password is wrong");
+    }
+    const isPasswordsMatching: boolean = await bcrypt.compare(
+      loginDto.password,
+      user.password,
+    );
+    if (!isPasswordsMatching) {
+      throw new BadRequestException("email or password is wrong");
+    }
+    const tokens: ITokens = await this.getTokens({
+      sub: user.id,
+      email: user.email,
+    });
+    await this.updateRefreshToken(user.id, tokens.refreshToken);
+    return tokens;
   }
 
   private async getTokens(payload: TokenPayload): Promise<ITokens> {

@@ -66,7 +66,27 @@ export class AuthService {
   }
 
   public async logout(userId: number): Promise<void> {
-    await this.usersService.updateRefreshToken(userId, null);
+    await this.usersService.removeRefreshToken(userId);
+  }
+
+  public async refresh(userId: number, refreshToken: string): Promise<ITokens> {
+    const user: User = await this.usersService.user(userId);
+    if (!user || !user.refresh_token) {
+      throw new BadRequestException("credentials are incorrect");
+    }
+    const isRtMatches: boolean = await bcrypt.compare(
+      refreshToken,
+      user.refresh_token,
+    );
+    if (!isRtMatches) {
+      throw new BadRequestException("credentials are incorrect");
+    }
+    const tokens: ITokens = await this.getTokens({
+      sub: user.id,
+      email: user.email,
+    });
+    await this.updateRefreshToken(user.id, tokens.refreshToken);
+    return tokens;
   }
 
   private async getTokens(payload: TokenPayload): Promise<ITokens> {

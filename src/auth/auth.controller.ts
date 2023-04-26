@@ -7,7 +7,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { CurrentUser } from "../common/decorators";
-import { JwtAuthGuard } from "../common/guards";
+import { JwtAuthGuard, JwtRefreshGuard } from "../common/guards";
 import { AuthService } from "./auth.service";
 import { LoginDto, SignupDto } from "./dtos";
 import { ITokens } from "./interfaces";
@@ -33,7 +33,17 @@ export class AuthController {
   @Post("/logout")
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  public async logout(@CurrentUser() userId: number): Promise<void> {
+  public async logout(@CurrentUser("id") userId: number): Promise<void> {
     return this.authService.logout(userId);
+  }
+
+  @Post("/refresh")
+  @UseGuards(JwtRefreshGuard)
+  @HttpCode(HttpStatus.OK)
+  public async refresh(
+    @CurrentUser("sub") userId: number,
+    @CurrentUser("refreshToken") refreshToken: string,
+  ): Promise<ITokens> {
+    return this.authService.refresh(userId, refreshToken);
   }
 }

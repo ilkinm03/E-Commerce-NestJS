@@ -1,6 +1,6 @@
 import {
   Body,
-  Controller,
+  Controller, Delete,
   Get, NotFoundException,
   Param,
   ParseIntPipe, Patch,
@@ -41,6 +41,13 @@ export class ProductsController {
     @Param("id", ParseIntPipe) id: number,
     @Body() productDto: UpdateProductDto,
   ): Promise<Product> {
-      return this.productsService.update(id, productDto);
+    return this.productsService.update(id, productDto);
+  }
+
+  @Delete(":id")
+  public async deleteProduct(
+    @Param("id", ParseIntPipe) id: number,
+  ): Promise<Product> {
+    return this.productsService.delete(id);
   }
 }

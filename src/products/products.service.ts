@@ -38,4 +38,12 @@ export class ProductsService {
       data: productDto,
     });
   }
+
+  public async delete(id: number): Promise<Product> {
+    return this.prismaService.product.delete({
+      where: {
+        id,
+      },
+    });
+  }
 }

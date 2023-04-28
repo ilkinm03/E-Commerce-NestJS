@@ -21,12 +21,20 @@ export class PrismaClientExceptionsFilter extends BaseExceptionFilter
     const ctx: HttpArgumentsHost = host.switchToHttp();
     const response: Response = ctx.getResponse<Response>();
     const message: string = exception.message.replace(/\n/g, "");
+    let statusCode: number = HttpStatus.INTERNAL_SERVER_ERROR;
     switch (exception.code) {
       case "P2002":
-        const statusCode: number = HttpStatus.CONFLICT;
+        statusCode = HttpStatus.CONFLICT;
         response.status(statusCode).json({
           statusCode,
           message,
+        });
+        break;
+      case "P2025":
+        statusCode = HttpStatus.NOT_FOUND;
+        response.status(statusCode).json({
+          statusCode,
+          message: "not found",
         });
         break;
       default:

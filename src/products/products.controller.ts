@@ -1,14 +1,14 @@
 import {
   Body,
   Controller,
-  Get,
+  Get, NotFoundException,
   Param,
-  ParseIntPipe,
+  ParseIntPipe, Patch,
   Post,
 } from "@nestjs/common";
 import { Product } from "@prisma/client";
 import { Serialize } from "../common/decorators";
-import { CreateProductDto, ProductDto } from "./dtos";
+import { CreateProductDto, ProductDto, UpdateProductDto } from "./dtos";
 import { ProductsService } from "./products.service";
 
 @Controller("products")
@@ -34,5 +34,13 @@ export class ProductsController {
     ParseIntPipe,
   ) id: number): Promise<Product> {
     return this.productsService.product(id);
+  }
+
+  @Patch(":id")
+  public async updateProduct(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() productDto: UpdateProductDto,
+  ): Promise<Product> {
+      return this.productsService.update(id, productDto);
   }
 }

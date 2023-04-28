@@ -1,13 +1,14 @@
 import {
   Body,
   Controller, Delete,
-  Get, NotFoundException,
+  Get,
   Param,
   ParseIntPipe, Patch,
-  Post,
+  Post, UseGuards,
 } from "@nestjs/common";
 import { Product } from "@prisma/client";
 import { Serialize } from "../common/decorators";
+import { JwtAuthGuard } from "../common/guards";
 import { CreateProductDto, ProductDto, UpdateProductDto } from "./dtos";
 import { ProductsService } from "./products.service";
 
@@ -19,6 +20,7 @@ export class ProductsController {
   ) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   public async createProduct(@Body() productDto: CreateProductDto): Promise<Product> {
     return this.productsService.create(productDto);
   }
@@ -37,6 +39,7 @@ export class ProductsController {
   }
 
   @Patch(":id")
+  @UseGuards(JwtAuthGuard)
   public async updateProduct(
     @Param("id", ParseIntPipe) id: number,
     @Body() productDto: UpdateProductDto,
@@ -45,6 +48,7 @@ export class ProductsController {
   }
 
   @Delete(":id")
+  @UseGuards(JwtAuthGuard)
   public async deleteProduct(
     @Param("id", ParseIntPipe) id: number,
   ): Promise<Product> {

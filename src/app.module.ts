@@ -6,6 +6,7 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { ConfigModule } from "./config/config.module";
 import { PrismaModule } from "./prisma/prisma.module";
+import { ProductsModule } from "./products/products.module";
 import { UsersModule } from "./users/users.module";
 
 @Global()
@@ -13,6 +14,7 @@ import { UsersModule } from "./users/users.module";
   imports: [
     PrismaModule,
     UsersModule,
+    ProductsModule,
     AuthModule,
     ConfigModule,
   ],

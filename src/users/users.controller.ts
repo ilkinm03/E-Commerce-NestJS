@@ -5,10 +5,11 @@ import {
   Param,
   ParseIntPipe, Patch,
   Post,
-  Query,
+  Query, UseGuards,
 } from "@nestjs/common";
 import { User } from "@prisma/client";
 import { Serialize } from "../common/decorators";
+import { JwtAuthGuard } from "../common/guards";
 import {
   CreateUserDto,
   UpdateUserDto,
@@ -18,6 +19,7 @@ import { UsersService } from "./users.service";
 
 @Controller("/users")
 @Serialize(UserDto)
+@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,

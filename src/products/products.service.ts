@@ -14,4 +14,8 @@ export class ProductsService {
       data: productDto,
     });
   }
+
+  public async products(): Promise<Product[]> {
+    return this.prismaService.product.findMany({});
+  }
 }

@@ -1,9 +1,11 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Get, Post } from "@nestjs/common";
 import { Product } from "@prisma/client";
-import { CreateProductDto } from "./dtos";
+import { Serialize } from "../common/decorators";
+import { CreateProductDto, ProductDto } from "./dtos";
 import { ProductsService } from "./products.service";
 
 @Controller("products")
+@Serialize(ProductDto)
 export class ProductsController {
   constructor(
     private readonly productsService: ProductsService,
@@ -12,5 +14,10 @@ export class ProductsController {
   @Post()
   public async createProduct(@Body() productDto: CreateProductDto): Promise<Product> {
     return this.productsService.create(productDto);
+  }
+
+  @Get()
+  public async findProducts(): Promise<Product[]> {
+    return this.productsService.products();
   }
 }

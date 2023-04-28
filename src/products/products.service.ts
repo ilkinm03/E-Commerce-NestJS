@@ -18,4 +18,12 @@ export class ProductsService {
   public async products(): Promise<Product[]> {
     return this.prismaService.product.findMany({});
   }
+
+  public async product(id: number): Promise<Product> {
+    return this.prismaService.product.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
 }

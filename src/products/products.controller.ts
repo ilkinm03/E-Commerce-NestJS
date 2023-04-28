@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+} from "@nestjs/common";
 import { Product } from "@prisma/client";
 import { Serialize } from "../common/decorators";
 import { CreateProductDto, ProductDto } from "./dtos";
@@ -19,5 +26,13 @@ export class ProductsController {
   @Get()
   public async findProducts(): Promise<Product[]> {
     return this.productsService.products();
+  }
+
+  @Get(":id")
+  public async findProductById(@Param(
+    "id",
+    ParseIntPipe,
+  ) id: number): Promise<Product> {
+    return this.productsService.product(id);
   }
 }

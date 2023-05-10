@@ -36,4 +36,8 @@ export class OrdersService {
       },
     });
   }
+
+  public async orders(): Promise<Order[]> {
+    return this.prismaService.order.findMany({});
+  }
 }

@@ -1,6 +1,6 @@
 import {
   Body,
-  Controller,
+  Controller, Get,
   Post,
   UseGuards,
 } from "@nestjs/common";
@@ -23,5 +23,11 @@ export class OrdersController {
     @Body() createOrderDto: CreateOrderDto
   ): Promise<Order> {
     return this.ordersService.create(userId, createOrderDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  public async getOrders(): Promise<Order[]> {
+    return this.ordersService.orders();
   }
 }

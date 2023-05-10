@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Order, Product } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
-import { CreateOrderDto } from "./dtos";
+import { CreateOrderDto, UpdateOrderDto } from "./dtos";
 
 @Injectable()
 export class OrdersService {
@@ -45,6 +45,35 @@ export class OrdersService {
     return this.prismaService.order.findUnique({
       where: {
         id,
+      },
+    });
+  }
+
+  public async update(
+    id: number,
+    updateOrderDto: UpdateOrderDto,
+  ): Promise<Order> {
+    const {
+      products,
+      ...rest
+    }: UpdateOrderDto = updateOrderDto;
+    const productRecords: Product[] = await this.prismaService.product.findMany(
+      {
+        where: {
+          id: { in: products },
+        },
+      });
+    return this.prismaService.order.update({
+      where: {
+        id,
+      },
+      data: {
+        ...rest,
+        products: {
+          connect: productRecords.map((product: Product): { id: number } => (
+            { id: product.id }
+          )),
+        },
       },
     });
   }

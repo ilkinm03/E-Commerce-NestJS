@@ -19,10 +19,10 @@ export class OrdersController {
   @UseGuards(JwtAuthGuard)
   @Post()
   public async createOrder(
-    @CurrentUser("sub") userId: number,
+    @CurrentUser("sub") orderId: number,
     @Body() createOrderDto: CreateOrderDto,
   ): Promise<Order> {
-    return this.ordersService.create(userId, createOrderDto);
+    return this.ordersService.create(orderId, createOrderDto);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -34,25 +34,25 @@ export class OrdersController {
   @UseGuards(JwtAuthGuard)
   @Get(":id")
   public async getOrder(
-    @Param("id", ParseIntPipe) userId: number,
+    @Param("id", ParseIntPipe) orderId: number,
   ): Promise<Order> {
-    return this.ordersService.order(userId);
+    return this.ordersService.order(orderId);
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch(":id")
   public async updateOrder(
-    @Param("id", ParseIntPipe) userId: number,
+    @Param("id", ParseIntPipe) orderId: number,
     @Body() updateOrderDto: UpdateOrderDto,
   ): Promise<Order> {
-    return this.ordersService.update(userId, updateOrderDto);
+    return this.ordersService.update(orderId, updateOrderDto);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(":id")
   public async deleteOrder(
-    @Param(":id", ParseIntPipe) userId: number,
+    @Param(":id", ParseIntPipe) orderId: number,
   ): Promise<Order> {
-    return this.ordersService.delete(userId);
+    return this.ordersService.delete(orderId);
   }
 }

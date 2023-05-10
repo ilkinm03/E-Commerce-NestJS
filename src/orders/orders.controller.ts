@@ -1,7 +1,7 @@
 import {
   Body,
-  Controller, Get,
-  Post,
+  Controller, Get, Param, ParseIntPipe,
+  Post, Query,
   UseGuards,
 } from "@nestjs/common";
 import { Order } from "@prisma/client";
@@ -29,5 +29,13 @@ export class OrdersController {
   @Get()
   public async getOrders(): Promise<Order[]> {
     return this.ordersService.orders();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(":id")
+  public async getOrder(
+    @Param("id", ParseIntPipe) userId: number,
+  ): Promise<Order> {
+    return this.ordersService.order(userId);
   }
 }

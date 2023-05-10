@@ -40,4 +40,12 @@ export class OrdersService {
   public async orders(): Promise<Order[]> {
     return this.prismaService.order.findMany({});
   }
+
+  public async order(id: number): Promise<Order> {
+    return this.prismaService.order.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
 }

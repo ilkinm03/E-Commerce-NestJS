@@ -1,6 +1,6 @@
 import {
   Body,
-  Controller, Get, Param, ParseIntPipe, Patch,
+  Controller, Delete, Get, Param, ParseIntPipe, Patch,
   Post,
   UseGuards,
 } from "@nestjs/common";
@@ -20,7 +20,7 @@ export class OrdersController {
   @Post()
   public async createOrder(
     @CurrentUser("sub") userId: number,
-    @Body() createOrderDto: CreateOrderDto
+    @Body() createOrderDto: CreateOrderDto,
   ): Promise<Order> {
     return this.ordersService.create(userId, createOrderDto);
   }
@@ -46,5 +46,13 @@ export class OrdersController {
     @Body() updateOrderDto: UpdateOrderDto,
   ): Promise<Order> {
     return this.ordersService.update(userId, updateOrderDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(":id")
+  public async deleteOrder(
+    @Param(":id", ParseIntPipe) userId: number,
+  ): Promise<Order> {
+    return this.ordersService.delete(userId);
   }
 }

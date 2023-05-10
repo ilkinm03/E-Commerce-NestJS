@@ -77,4 +77,12 @@ export class OrdersService {
       },
     });
   }
+
+  public async delete(id: number): Promise<Order> {
+    return this.prismaService.order.delete({
+      where: {
+        id,
+      },
+    });
+  }
 }

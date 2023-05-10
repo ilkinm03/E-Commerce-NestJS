@@ -45,7 +45,7 @@ model Order {
   transaction_id  Int?      @unique
   shipping_method String?
   tracking_number String?   @unique
-  order_status    String    @default("pending")
+  order_status    String?   @default("pending")
   order_date      DateTime  @default(now()) @db.Timestamp()
   delivery_date   DateTime?
 }

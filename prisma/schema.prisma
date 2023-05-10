@@ -48,4 +48,6 @@ model Order {
   order_status    String?   @default("pending")
   order_date      DateTime  @default(now()) @db.Timestamp()
   delivery_date   DateTime?
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
 }

@@ -35,7 +35,7 @@ model Product {
 
 model Order {
   id              Int       @id @default(autoincrement())
-  order_no        Int       @unique
+  order_no        String    @unique
   products        Product[]
   total_price     Float     @default(0) @db.Real
   user            User      @relation(fields: [userId], references: [id])

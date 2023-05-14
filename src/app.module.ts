@@ -5,6 +5,7 @@ import { PrismaClientExceptionsFilter } from "./common/filters";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { ConfigModule } from "./config/config.module";
+import { OrdersModule } from "./orders/orders.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { ProductsModule } from "./products/products.module";
 import { UsersModule } from "./users/users.module";
@@ -15,6 +16,7 @@ import { UsersModule } from "./users/users.module";
     PrismaModule,
     UsersModule,
     ProductsModule,
+    OrdersModule,
     AuthModule,
     ConfigModule,
   ],

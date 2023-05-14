@@ -69,9 +69,9 @@ export class UsersService {
         },
       },
       data: {
-        refresh_token: null
-      }
-    })
+        refresh_token: null,
+      },
+    });
   }
 
   public async delete(id: number): Promise<User> {
@@ -82,4 +82,14 @@ export class UsersService {
     });
   }
 
+  public async updateUserOrders(id: number, orderId: number) {
+    return this.prismaService.user.update({
+      where: {
+        id,
+      },
+      data: {
+        orders: { connect: { id: orderId } },
+      },
+    });
+  }
 }

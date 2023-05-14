@@ -1,12 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { Order, Product } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
+import { UsersService } from "../users/users.service";
 import { CreateOrderDto, UpdateOrderDto } from "./dtos";
 
 @Injectable()
 export class OrdersService {
   constructor(
     private readonly prismaService: PrismaService,
+    private readonly usersService: UsersService,
   ) {}
 
   public async create(
@@ -23,7 +25,7 @@ export class OrdersService {
           id: { in: products },
         },
       });
-    return this.prismaService.order.create({
+    const order: Order = await this.prismaService.order.create({
       data: {
         ...rest,
         order_no: Date.now().toString(),
@@ -35,6 +37,8 @@ export class OrdersService {
         },
       },
     });
+    await this.usersService.updateUserOrders(userId, order.id);
+    return order;
   }
 
   public async orders(): Promise<Order[]> {

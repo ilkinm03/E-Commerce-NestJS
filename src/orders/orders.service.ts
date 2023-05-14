@@ -26,7 +26,7 @@ export class OrdersService {
     return this.prismaService.order.create({
       data: {
         ...rest,
-        order_no: Date.now(),
+        order_no: Date.now().toString(),
         user: { connect: { id: userId } },
         products: {
           connect: productRecords.map((product: Product): { id: number } => (

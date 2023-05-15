@@ -5,6 +5,11 @@ import { ProductsService } from "../products/products.service";
 import { UsersService } from "../users/users.service";
 import { CreateOrderDto, UpdateOrderDto } from "./dtos";
 
+type OrderData = Omit<CreateOrderDto, "products"> & {
+  userId: number,
+  productRecords: Product[]
+};
+
 @Injectable()
 export class OrdersService {
   constructor(
@@ -23,22 +28,14 @@ export class OrdersService {
     }: CreateOrderDto = createOrderDto;
     const productRecords: Product[] = await this.productsService.getProductsByIds(
       products);
+    const orderData: OrderData = {
+      userId,
+      productRecords,
+      ...rest,
+    };
     const order: Order = await this.prismaService.$transaction(
       async (prisma: Partial<PrismaService>): Promise<Order> => {
-        const createdOrder: Order = await prisma.order.create({
-          data: {
-            ...rest,
-            order_no: Date.now().toString(),
-            user: { connect: { id: userId } },
-            products: {
-              connect: productRecords.map((product: Product): {
-                id: number
-              } => (
-                { id: product.id }
-              )),
-            },
-          },
-        });
+        const createdOrder: Order = await this.createOrder(prisma, orderData);
         if (!createdOrder) {
           throw new ServiceUnavailableException(
             "the transaction cannot be fulfilled");
@@ -47,6 +44,31 @@ export class OrdersService {
         return createdOrder;
       });
     return order;
+  }
+
+  public async createOrder(
+    prisma: Partial<PrismaService>,
+    orderData: OrderData,
+  ): Promise<Order> {
+    const {
+      userId,
+      productRecords,
+      ...rest
+    }: OrderData = orderData;
+    return prisma.order.create({
+      data: {
+        ...rest,
+        order_no: Date.now().toString(),
+        user: { connect: { id: userId } },
+        products: {
+          connect: productRecords.map((product: Product): {
+            id: number
+          } => (
+            { id: product.id }
+          )),
+        },
+      },
+    });
   }
 
   public async orders(): Promise<Order[]> {

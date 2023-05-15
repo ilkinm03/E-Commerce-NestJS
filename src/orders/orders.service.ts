@@ -69,12 +69,8 @@ export class OrdersService {
       products,
       ...rest
     }: UpdateOrderDto = updateOrderDto;
-    const productRecords: Product[] = await this.prismaService.product.findMany(
-      {
-        where: {
-          id: { in: products },
-        },
-      });
+    const productRecords: Product[] = await this.productsService.getProductsByIds(
+      products);
     return this.prismaService.order.update({
       where: {
         id,

@@ -27,6 +27,15 @@ export class ProductsService {
     });
   }
 
+  public async getProductsByIds(products: number[]): Promise<Product[]> {
+    return this.prismaService.product.findMany(
+      {
+        where: {
+          id: { in: products },
+        },
+      });
+  }
+
   public async update(
     id: number,
     productDto: UpdateProductDto,

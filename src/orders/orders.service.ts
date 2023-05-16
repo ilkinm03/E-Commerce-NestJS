@@ -33,17 +33,20 @@ export class OrdersService {
       productRecords,
       ...rest,
     };
-    const order: Order = await this.prismaService.$transaction(
-      async (prisma: Partial<PrismaService>): Promise<Order> => {
+    return this.prismaService.$transaction(
+      async (prisma: PrismaService): Promise<Order> => {
         const createdOrder: Order = await this.createOrder(prisma, orderData);
         if (!createdOrder) {
           throw new ServiceUnavailableException(
             "the transaction cannot be fulfilled");
         }
-        await this.usersService.updateUserOrders(userId, order.id);
+        await this.usersService.updateUserOrders(
+          prisma,
+          userId,
+          createdOrder.id,
+        );
         return createdOrder;
       });
-    return order;
   }
 
   public async createOrder(

@@ -1,12 +1,21 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, ServiceUnavailableException } from "@nestjs/common";
 import { Order, Product } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
+import { ProductsService } from "../products/products.service";
+import { UsersService } from "../users/users.service";
 import { CreateOrderDto, UpdateOrderDto } from "./dtos";
+
+type OrderData = Omit<CreateOrderDto, "products"> & {
+  userId: number,
+  productRecords: Product[]
+};
 
 @Injectable()
 export class OrdersService {
   constructor(
     private readonly prismaService: PrismaService,
+    private readonly usersService: UsersService,
+    private readonly productsService: ProductsService,
   ) {}
 
   public async create(
@@ -17,19 +26,47 @@ export class OrdersService {
       products,
       ...rest
     }: CreateOrderDto = createOrderDto;
-    const productRecords: Product[] = await this.prismaService.product.findMany(
-      {
-        where: {
-          id: { in: products },
-        },
+    const productRecords: Product[] = await this.productsService.getProductsByIds(
+      products);
+    const orderData: OrderData = {
+      userId,
+      productRecords,
+      ...rest,
+    };
+    return this.prismaService.$transaction(
+      async (prisma: PrismaService): Promise<Order> => {
+        const createdOrder: Order = await this.createOrder(prisma, orderData);
+        if (!createdOrder) {
+          throw new ServiceUnavailableException(
+            "the transaction cannot be fulfilled");
+        }
+        await this.usersService.updateUserOrders(
+          prisma,
+          userId,
+          createdOrder.id,
+        );
+        return createdOrder;
       });
-    return this.prismaService.order.create({
+  }
+
+  public async createOrder(
+    prisma: Partial<PrismaService>,
+    orderData: OrderData,
+  ): Promise<Order> {
+    const {
+      userId,
+      productRecords,
+      ...rest
+    }: OrderData = orderData;
+    return prisma.order.create({
       data: {
         ...rest,
         order_no: Date.now().toString(),
         user: { connect: { id: userId } },
         products: {
-          connect: productRecords.map((product: Product): { id: number } => (
+          connect: productRecords.map((product: Product): {
+            id: number
+          } => (
             { id: product.id }
           )),
         },
@@ -57,12 +94,8 @@ export class OrdersService {
       products,
       ...rest
     }: UpdateOrderDto = updateOrderDto;
-    const productRecords: Product[] = await this.prismaService.product.findMany(
-      {
-        where: {
-          id: { in: products },
-        },
-      });
+    const productRecords: Product[] = await this.productsService.getProductsByIds(
+      products);
     return this.prismaService.order.update({
       where: {
         id,

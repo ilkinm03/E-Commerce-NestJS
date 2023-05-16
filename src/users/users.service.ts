@@ -82,8 +82,12 @@ export class UsersService {
     });
   }
 
-  public async updateUserOrders(id: number, orderId: number) {
-    return this.prismaService.user.update({
+  public async updateUserOrders(
+    prisma: PrismaService,
+    id: number,
+    orderId: number,
+  ): Promise<User> {
+    return prisma.user.update({
       where: {
         id,
       },

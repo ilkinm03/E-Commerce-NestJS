@@ -1,5 +1,11 @@
-import { Injectable, ServiceUnavailableException } from "@nestjs/common";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
+import {
+  Inject,
+  Injectable, NotFoundException,
+  ServiceUnavailableException,
+} from "@nestjs/common";
 import { Order, Product } from "@prisma/client";
+import { Cache } from "cache-manager";
 import { PrismaService } from "../prisma/prisma.service";
 import { ProductsService } from "../products/products.service";
 import { UsersService } from "../users/users.service";
@@ -13,6 +19,7 @@ type OrderData = Omit<CreateOrderDto, "products"> & {
 @Injectable()
 export class OrdersService {
   constructor(
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
     private readonly prismaService: PrismaService,
     private readonly usersService: UsersService,
     private readonly productsService: ProductsService,
@@ -75,15 +82,30 @@ export class OrdersService {
   }
 
   public async orders(): Promise<Order[]> {
-    return this.prismaService.order.findMany({});
+    const cachedOrders: Order[] = await this.cacheManager.get<Order[]>("orders");
+    if (cachedOrders) {
+      return cachedOrders;
+    }
+    const orders: Order[] = await this.prismaService.order.findMany({});
+    await this.cacheManager.set("orders", orders, )
+    return orders
   }
 
   public async order(id: number): Promise<Order> {
-    return this.prismaService.order.findUnique({
+    const cachedOrder: Order = await this.cacheManager.get<Order>(`order-${id}`);
+    if (cachedOrder) {
+      return cachedOrder;
+    }
+    const order: Order = await this.prismaService.order.findUnique({
       where: {
         id,
       },
     });
+    if (!order) {
+      throw new NotFoundException("order not found!");
+    }
+    await this.cacheManager.set(`order-${id}`, order);
+    return order;
   }
 
   public async update(

@@ -1,11 +1,14 @@
-import { Injectable } from "@nestjs/common";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
+import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { Product } from "@prisma/client";
+import { Cache } from "cache-manager";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateProductDto, UpdateProductDto } from "./dtos";
 
 @Injectable()
 export class ProductsService {
   constructor(
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
     private readonly prismaService: PrismaService,
   ) {}
 
@@ -16,15 +19,31 @@ export class ProductsService {
   }
 
   public async products(): Promise<Product[]> {
-    return this.prismaService.product.findMany({});
+    const cachedProducts: Product[] = await this.cacheManager.get<Product[]>(
+      "products");
+    if (cachedProducts) {
+      return cachedProducts;
+    }
+    const products: Product[] = await this.prismaService.product.findMany({});
+    await this.cacheManager.set("products", products);
+    return products;
   }
 
   public async product(id: number): Promise<Product> {
-    return this.prismaService.product.findUnique({
+    const cachedProduct: Product = await this.cacheManager.get<Product>(`product-${id}`);
+    if (cachedProduct) {
+      return cachedProduct;
+    }
+    const product: Product = await this.prismaService.product.findUnique({
       where: {
         id,
       },
     });
+    if (!product) {
+      throw new NotFoundException("product not found");
+    }
+    await this.cacheManager.set(`product-${id}`, product);
+    return product;
   }
 
   public async getProductsByIds(products: number[]): Promise<Product[]> {

@@ -1,23 +1,36 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
+import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { Prisma, User } from "@prisma/client";
+import { Cache } from "cache-manager";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateUserDto, UpdateUserDto } from "./dtos";
 
 @Injectable()
 export class UsersService {
   constructor(
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
     private readonly prismaService: PrismaService,
   ) {}
 
   public async users(email?: string): Promise<User[]> {
-    return this.prismaService.user.findMany({
+    const cachedUsers: User[] = await this.cacheManager.get<User[]>("users");
+    if (cachedUsers) {
+      return cachedUsers;
+    }
+    const users: User[] = await this.prismaService.user.findMany({
       where: {
         email,
       },
     });
+    await this.cacheManager.set("users", users);
+    return users;
   }
 
   public async user(id: number): Promise<User> {
+    const cachedUser: User = await this.cacheManager.get<User>(`user-${id}`);
+    if (cachedUser) {
+      return cachedUser;
+    }
     const user: User = await this.prismaService.user.findUnique({
       where: {
         id,
@@ -26,6 +39,7 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException("user not found");
     }
+    await this.cacheManager.set(`user-${id}`, user);
     return user;
   }
 

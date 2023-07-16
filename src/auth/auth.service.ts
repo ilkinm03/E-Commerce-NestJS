@@ -38,7 +38,7 @@ export class AuthService {
     const tokens: ITokens = await this.getTokens({
       sub: user.id,
       email: user.email,
-      permissions: userPermissions.map(p => p.id),
+      permissions: userPermissions.map(p => p.title),
     });
     await this.updateRefreshToken(user.id, tokens.refreshToken);
     return tokens;
@@ -61,7 +61,7 @@ export class AuthService {
     const tokens: ITokens = await this.getTokens({
       sub: user.id,
       email: user.email,
-      permissions: userPermissions.map(p => p.id),
+      permissions: userPermissions.map(p => p.title),
     });
     await this.updateRefreshToken(user.id, tokens.refreshToken);
     return tokens;
@@ -88,7 +88,7 @@ export class AuthService {
     const tokens: ITokens = await this.getTokens({
       sub: user.id,
       email: user.email,
-      permissions: userPermissions.map(p => p.id),
+      permissions: userPermissions.map(p => p.title),
     });
     await this.updateRefreshToken(user.id, tokens.refreshToken);
     return tokens;

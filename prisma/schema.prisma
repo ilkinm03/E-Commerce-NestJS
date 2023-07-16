@@ -23,11 +23,30 @@ model User {
 }
 
 model Role {
-  id          Int      @id @default(autoincrement())
-  title       String   @unique
-  permissions String[] @default([])
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  id          Int                  @id @default(autoincrement())
+  title       String               @unique
+  permisisons PermissionsOnRoles[]
+  created_at  DateTime             @default(now())
+  updated_at  DateTime             @updatedAt
+}
+
+model Permission {
+  id         Int                  @id @default(autoincrement())
+  title      String               @unique
+  roles      PermissionsOnRoles[]
+  created_at DateTime             @default(now())
+  updated_at DateTime             @updatedAt
+}
+
+model PermissionsOnRoles {
+  role          Role       @relation(fields: [role_id], references: [id])
+  role_id       Int
+  permission    Permission @relation(fields: [permission_id], references: [id])
+  permission_id Int
+  created_at    DateTime   @default(now())
+  updated_at    DateTime   @updatedAt
+
+  @@id([permission_id, role_id])
 }
 
 model Product {

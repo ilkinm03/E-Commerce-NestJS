@@ -22,6 +22,14 @@ model User {
   orders        Order[]
 }
 
+model Role {
+  id          Int      @id @default(autoincrement())
+  title       String   @unique
+  permissions String[] @default([])
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
 model Product {
   id          Int      @id @default(autoincrement())
   title       String   @db.VarChar(64)

@@ -28,21 +28,17 @@ export class AuthService {
     if (password !== confirm_password) {
       throw new BadRequestException("passwords not match");
     }
-    try {
-      const hashedPassword: string = await bcrypt.hash(password, 10);
-      const user: User = await this.usersService.create({
-        password: hashedPassword,
-        ...userData,
-      });
-      const tokens: ITokens = await this.getTokens({
-        sub: user.id,
-        email: user.email,
-      });
-      await this.updateRefreshToken(user.id, tokens.refreshToken);
-      return tokens;
-    } catch (error) {
-      throw new ConflictException("email is already in use");
-    }
+    const hashedPassword: string = await bcrypt.hash(password, 10);
+    const user: User = await this.usersService.create({
+      password: hashedPassword,
+      ...userData,
+    });
+    const tokens: ITokens = await this.getTokens({
+      sub: user.id,
+      email: user.email,
+    });
+    await this.updateRefreshToken(user.id, tokens.refreshToken);
+    return tokens;
   }
 
   public async login(loginDto: LoginDto): Promise<ITokens> {

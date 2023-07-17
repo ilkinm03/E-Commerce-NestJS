@@ -9,7 +9,7 @@ import { Prisma, Role, User } from "@prisma/client";
 import { Cache } from "cache-manager";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateUserDto, UpdateUserDto } from "./dtos";
-import { RolesService } from "./roles/roles.service";
+import { RolesService } from "../roles/roles.service";
 
 @Injectable()
 export class UsersService {

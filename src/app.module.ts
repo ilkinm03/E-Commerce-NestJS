@@ -9,6 +9,7 @@ import { ConfigModule } from "./config/config.module";
 import { OrdersModule } from "./orders/orders.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { ProductsModule } from "./products/products.module";
+import { RolesModule } from "./roles/roles.module";
 import { UsersModule } from "./users/users.module";
 
 @Global()
@@ -20,6 +21,7 @@ import { UsersModule } from "./users/users.module";
     OrdersModule,
     AuthModule,
     ConfigModule,
+    RolesModule,
     CacheModule.register({
       isGlobal: true,
     }),

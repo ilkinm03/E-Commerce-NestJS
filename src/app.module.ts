@@ -7,6 +7,7 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { ConfigModule } from "./config/config.module";
 import { OrdersModule } from "./orders/orders.module";
+import { PermissionsModule } from "./permissions/permissions.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { ProductsModule } from "./products/products.module";
 import { RolesModule } from "./roles/roles.module";
@@ -22,6 +23,7 @@ import { UsersModule } from "./users/users.module";
     AuthModule,
     ConfigModule,
     RolesModule,
+    PermissionsModule,
     CacheModule.register({
       isGlobal: true,
     }),

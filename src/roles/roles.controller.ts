@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, Patch, Post, Query } from "@nestjs/common";
 import { Role } from "@prisma/client";
+import { AddPermissionDto } from "../permissions/dtos";
 import { CreateRoleDto } from "./dtos";
 import { RolesService } from "./roles.service";
 
@@ -15,5 +16,10 @@ export class RolesController {
   @Get()
   public async getRoles(@Query("title") title?: string): Promise<Role[]> {
     return this.rolesService.getRoles(title);
+  }
+
+  @Patch()
+  public async addPermission(@Body() addPermissionDto: AddPermissionDto): Promise<Role> {
+    return this.rolesService.addPermission(addPermissionDto);
   }
 }

@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { Role } from "@prisma/client";
+import { AddPermissionDto } from "../permissions/dtos";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateRoleDto } from "./dtos";
 
@@ -52,6 +53,33 @@ export class RolesService {
         RolesOnUsers: {
           some: {
             user_id: userId,
+          },
+        },
+      },
+    });
+  }
+
+  public async addPermission(addPermissionDto: AddPermissionDto): Promise<Role> {
+    const {
+      id,
+      permissionId,
+    }: AddPermissionDto = addPermissionDto;
+    return this.prismaService.role.update({
+      where: {
+        id,
+      },
+      data: {
+        permisisons: {
+          connectOrCreate: {
+            where: {
+              permission_id_role_id: {
+                permission_id: permissionId,
+                role_id: id,
+              },
+            },
+            create: {
+              permission_id: permissionId,
+            },
           },
         },
       },

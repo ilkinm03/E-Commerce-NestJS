@@ -35,4 +35,9 @@ export class RolesController {
   public async addPermission(@Body() addPermissionDto: AddPermissionDto): Promise<Role> {
     return this.rolesService.addPermission(addPermissionDto);
   }
+
+  @Delete(":id")
+  public async deleteRole(@Param("id", ParseIntPipe) id: number): Promise<Role> {
+    return this.rolesService.deleteRoleById(id);
+  }
 }

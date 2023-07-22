@@ -95,4 +95,12 @@ export class RolesService {
       },
     });
   }
+
+  public async deleteRoleById(id: number): Promise<Role> {
+    return this.prismaService.role.delete({
+      where: {
+        id,
+      },
+    });
+  }
 }

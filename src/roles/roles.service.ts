@@ -22,6 +22,8 @@ export class RolesService {
     });
   }
 
+  /* TODO rename `getRoles` method name or create another method for getting role by title.
+   Because, `title` is a unique field and the method should not return array of Roles. */
   public async getRoles(title?: string): Promise<Role[]> {
     return this.prismaService.role.findMany({
       where: {
@@ -33,6 +35,14 @@ export class RolesService {
             permission: true,
           },
         },
+      },
+    });
+  }
+
+  public async getRoleById(id: number): Promise<Role> {
+    return this.prismaService.role.findUnique({
+      where: {
+        id,
       },
     });
   }

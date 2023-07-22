@@ -31,7 +31,7 @@ export class RolesController {
     return this.rolesService.getRoleById(id);
   }
 
-  @Patch()
+  @Patch("grant")
   public async grantPermission(@Body() addPermissionDto: AddPermissionDto): Promise<Role> {
     return this.rolesService.addPermission(addPermissionDto);
   }

@@ -8,7 +8,7 @@ import {
   Query,
 } from "@nestjs/common";
 import { Role } from "@prisma/client";
-import { CreateRoleDto, AddPermissionDto } from "./dtos";
+import { CreateRoleDto, AddPermissionDto, RemovePermissionDto } from "./dtos";
 import { RolesService } from "./roles.service";
 
 @Controller("roles")
@@ -33,6 +33,11 @@ export class RolesController {
   @Patch("grant")
   public async grantPermission(@Body() addPermissionDto: AddPermissionDto): Promise<Role> {
     return this.rolesService.addPermission(addPermissionDto);
+  }
+
+  @Patch("provoke")
+  public async provokePermission(@Body() removePermissionDto: RemovePermissionDto): Promise<Role> {
+    return this.rolesService.removePermission(removePermissionDto);
   }
 
   @Delete(":id")

@@ -1,10 +1,9 @@
 import {
   ConflictException,
   Injectable,
-  NotFoundException,
 } from "@nestjs/common";
 import { Role } from "@prisma/client";
-import { AddPermissionDto } from "../permissions/dtos";
+import { AddPermissionDto } from "./dtos";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateRoleDto } from "./dtos";
 

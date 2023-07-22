@@ -8,8 +8,7 @@ import {
   Query,
 } from "@nestjs/common";
 import { Role } from "@prisma/client";
-import { AddPermissionDto } from "../permissions/dtos";
-import { CreateRoleDto } from "./dtos";
+import { CreateRoleDto, AddPermissionDto } from "./dtos";
 import { RolesService } from "./roles.service";
 
 @Controller("roles")

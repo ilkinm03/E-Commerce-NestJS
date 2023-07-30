@@ -3,11 +3,11 @@ import {
   Controller,
   Get,
   Param,
-  ParseIntPipe,
+  ParseIntPipe, Patch,
   Post,
 } from "@nestjs/common";
 import { Permission } from "@prisma/client";
-import { CreatePermissionDto } from "./dtos";
+import { CreatePermissionDto, UpdatePermissionDto } from "./dtos";
 import { PermissionsService } from "./permissions.service";
 
 @Controller("permissions")
@@ -30,5 +30,10 @@ export class PermissionsController {
   @Post()
   public async createPermission(@Body() createPermissionsDto: CreatePermissionDto): Promise<Permission> {
     return this.permissionsService.createPermission(createPermissionsDto);
+  }
+
+  @Patch()
+  public async updatePermission(@Body() updatePermissionDto: UpdatePermissionDto): Promise<Permission> {
+    return this.permissionsService.updatePermission(updatePermissionDto);
   }
 }

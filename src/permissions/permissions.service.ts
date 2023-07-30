@@ -7,6 +7,10 @@ import { CreatePermissionDto } from "./dtos";
 export class PermissionsService {
   constructor(private readonly prismaService: PrismaService) {}
 
+  public async getPermissions(): Promise<Permission[]> {
+    return this.prismaService.permission.findMany({});
+  }
+
   public async createPermission(createPermissionDto: CreatePermissionDto): Promise<Permission> {
     const existingPermission: Permission = await this.findUniquePermissionByTitle(
       createPermissionDto.title);

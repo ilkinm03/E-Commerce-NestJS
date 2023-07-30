@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from "@nestjs/common";
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { Permission } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreatePermissionDto } from "./dtos";
@@ -9,6 +13,18 @@ export class PermissionsService {
 
   public async getPermissions(): Promise<Permission[]> {
     return this.prismaService.permission.findMany({});
+  }
+
+  public async findUniquePermissionById(id: number): Promise<Permission> {
+    const permission: Permission = await this.prismaService.permission.findUnique({
+      where: {
+        id,
+      },
+    });
+    if (!permission) {
+      throw new NotFoundException("permission not found");
+    }
+    return permission;
   }
 
   public async createPermission(createPermissionDto: CreatePermissionDto): Promise<Permission> {

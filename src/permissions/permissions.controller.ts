@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+} from "@nestjs/common";
 import { Permission } from "@prisma/client";
 import { CreatePermissionDto } from "./dtos";
 import { PermissionsService } from "./permissions.service";
@@ -10,6 +17,14 @@ export class PermissionsController {
   @Get()
   public async getPermissions(): Promise<Permission[]> {
     return this.permissionsService.getPermissions();
+  }
+
+  @Get(":id")
+  public async getPermissionById(@Param(
+    "id",
+    ParseIntPipe,
+  ) id: number): Promise<Permission> {
+    return this.permissionsService.findUniquePermissionById(id);
   }
 
   @Post()

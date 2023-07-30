@@ -55,6 +55,15 @@ export class PermissionsService {
     });
   }
 
+  public async deletePermission(id: number): Promise<Permission> {
+    await this.findUniquePermissionById(id);
+    return this.prismaService.permission.delete({
+      where: {
+        id,
+      },
+    });
+  }
+
   private async findUniquePermissionByTitle(title: string): Promise<Permission> {
     return this.prismaService.permission.findUnique({
       where: {

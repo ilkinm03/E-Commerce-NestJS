@@ -1,6 +1,6 @@
 import {
   Body,
-  Controller,
+  Controller, Delete,
   Get,
   Param,
   ParseIntPipe, Patch,
@@ -35,5 +35,13 @@ export class PermissionsController {
   @Patch()
   public async updatePermission(@Body() updatePermissionDto: UpdatePermissionDto): Promise<Permission> {
     return this.permissionsService.updatePermission(updatePermissionDto);
+  }
+
+  @Delete(":id")
+  public async deletePermission(@Param(
+    "id",
+    ParseIntPipe,
+  ) id: number): Promise<Permission> {
+    return this.permissionsService.deletePermission(id);
   }
 }

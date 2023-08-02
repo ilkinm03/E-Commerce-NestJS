@@ -8,10 +8,13 @@ import {
   Query,
 } from "@nestjs/common";
 import { Role } from "@prisma/client";
+import { Serialize } from "../common/decorators";
 import { CreateRoleDto, AddPermissionDto, RemovePermissionDto } from "./dtos";
+import { RolesDto } from "./dtos/roles.dto";
 import { RolesService } from "./roles.service";
 
 @Controller("roles")
+@Serialize(RolesDto)
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 

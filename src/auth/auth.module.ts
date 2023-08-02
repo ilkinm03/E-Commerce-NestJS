@@ -11,6 +11,7 @@ import { JwtAuthStrategy, JwtRefreshStrategy } from "./strategies";
 @Module({
   imports: [
     JwtModule.register({}),
+    UsersModule
   ],
   controllers: [AuthController],
   providers: [

@@ -1,15 +1,23 @@
 import {
   Body,
-  Controller, Delete,
+  Controller,
+  Delete,
   Get,
   Param,
-  ParseIntPipe, Patch,
+  ParseIntPipe,
+  Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
 import { Permission } from "@prisma/client";
+import { PermissionsRequired } from "../common/decorators";
+import { PermissionsEnum } from "../common/enums";
+import { JwtAuthGuard, PermissionsRequiredGuard } from "../common/guards";
 import { CreatePermissionDto, UpdatePermissionDto } from "./dtos";
 import { PermissionsService } from "./permissions.service";
 
+@UseGuards(JwtAuthGuard, PermissionsRequiredGuard)
+@PermissionsRequired(PermissionsEnum.PERMISSIONS_READ, PermissionsEnum.PERMISSIONS_WRITE)
 @Controller("permissions")
 export class PermissionsController {
   constructor(private readonly permissionsService: PermissionsService) {}

@@ -7,4 +7,7 @@ export enum PermissionsEnum {
 
   ORDERS_READ = "read:order",
   ORDERS_WRITE = "write:order",
+
+  ROLES_READ = "read:role",
+  ROLES_WRITE = "write:role",
 }

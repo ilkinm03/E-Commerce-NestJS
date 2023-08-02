@@ -9,7 +9,7 @@ export class RolesDto {
   title: string;
 
   @Expose()
-  @Transform(({ value }) => value.map(p => (
+  @Transform(({ value }) => value?.map(p => (
     {
       id: p.permission.id,
       title: p.permission.title,

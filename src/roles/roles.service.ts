@@ -92,6 +92,13 @@ export class RolesService {
           },
         },
       },
+      include: {
+        permisisons: {
+          include: {
+            permission: true,
+          },
+        },
+      },
     });
   }
 

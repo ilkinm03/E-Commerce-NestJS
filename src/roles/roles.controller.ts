@@ -2,18 +2,29 @@ import {
   Body,
   Controller,
   Delete,
-  Get, Param, ParseIntPipe,
+  Get,
+  Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import { Role } from "@prisma/client";
-import { Serialize } from "../common/decorators";
-import { CreateRoleDto, AddPermissionDto, RemovePermissionDto } from "./dtos";
-import { RolesDto } from "./dtos/roles.dto";
+import { PermissionsRequired, Serialize } from "../common/decorators";
+import { PermissionsEnum } from "../common/enums";
+import { JwtAuthGuard, PermissionsRequiredGuard } from "../common/guards";
+import {
+  AddPermissionDto,
+  CreateRoleDto,
+  RemovePermissionDto,
+  RolesDto,
+} from "./dtos";
 import { RolesService } from "./roles.service";
 
 @Controller("roles")
+@UseGuards(JwtAuthGuard, PermissionsRequiredGuard)
+@PermissionsRequired(PermissionsEnum.ROLES_READ, PermissionsEnum.ROLES_WRITE)
 @Serialize(RolesDto)
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}

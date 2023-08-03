@@ -30,4 +30,16 @@ export class ConfigService {
   public get jwtRefreshTokenExp(): number {
     return this.nestConfigService.get<number>("JWT_REFRESH_TOKEN_EXP_TIME");
   }
+
+  public get googleOauthClientId(): string {
+    return this.nestConfigService.get<string>("GOOGLE_OAUTH_CLIENT_ID");
+  }
+
+  public get googleOauthClientSecert(): string {
+    return this.nestConfigService.get<string>("GOOGLE_OAUTH_CLIENT_SECRET");
+  }
+
+  public get googleOauthCallbackUrl(): string {
+    return this.nestConfigService.get<string>("GOOGLE_OAUTH_CALLBACK_URL");
+  }
 }

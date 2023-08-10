@@ -16,10 +16,12 @@ model User {
   last_name     String
   email         String         @unique
   password      String
-  roles         RolesOnUsers[]
+  provider      String?        @default("local")
+  provided_id   String?        @unique
   refresh_token String?        @unique
   created_at    DateTime       @default(now())
   updated_at    DateTime       @updatedAt
+  roles         RolesOnUsers[]
   orders        Order[]
 }
 

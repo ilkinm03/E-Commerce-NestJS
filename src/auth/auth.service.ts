@@ -3,6 +3,7 @@ import { JwtService } from "@nestjs/jwt";
 import { Permission, Role, User } from "@prisma/client";
 import * as bcrypt from "bcrypt";
 import { ConfigService } from "../config/config.service";
+import { IGoogleUser } from "../users/interfaces";
 import { PermissionsService } from "../roles/permissions.service";
 import { RolesService } from "../roles/roles.service";
 import { UsersService } from "../users/users.service";
@@ -73,7 +74,10 @@ export class AuthService {
 
   public async refresh(userId: number, refreshToken: string): Promise<ITokens> {
     const user: User = await this.usersService.user(userId);
-    if (!user || !user.refresh_token) {
+    if (!user ||
+        (
+          user && !user.refresh_token
+        )) {
       throw new BadRequestException("credentials are incorrect");
     }
     const isRtMatches: boolean = await bcrypt.compare(
@@ -91,6 +95,31 @@ export class AuthService {
       permissions: userPermissions.map(p => p.title),
     });
     await this.updateRefreshToken(user.id, tokens.refreshToken);
+    return tokens;
+  }
+
+  public async googleLogin(user: IGoogleUser): Promise<ITokens> {
+    const [existingUser]: User[] = await this.usersService.users(user.email);
+    if (existingUser) {
+      const tokens: ITokens = await this.getTokens({
+        sub: existingUser.id,
+        email: existingUser.email,
+      });
+      await this.updateRefreshToken(existingUser.id, tokens.refreshToken);
+      return tokens;
+    }
+    const createdUser: User = await this.usersService.createGoogleUser({
+      first_name: user.firstName,
+      last_name: user.lastName,
+      email: user.email,
+      provider: "google",
+      provided_id: user.providedId,
+    });
+    const tokens: ITokens = await this.getTokens({
+      sub: createdUser.id,
+      email: createdUser.email,
+    });
+    await this.updateRefreshToken(createdUser.id, tokens.refreshToken);
     return tokens;
   }
 

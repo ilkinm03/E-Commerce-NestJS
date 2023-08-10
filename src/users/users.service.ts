@@ -8,7 +8,7 @@ import {
 import { Prisma, Role, User } from "@prisma/client";
 import { Cache } from "cache-manager";
 import { PrismaService } from "../prisma/prisma.service";
-import { CreateUserDto, UpdateUserDto } from "./dtos";
+import { CreateGoogleUserDto, CreateUserDto, UpdateUserDto } from "./dtos";
 import { RolesService } from "../roles/roles.service";
 
 @Injectable()
@@ -75,6 +75,15 @@ export class UsersService {
             { role: { connect: { id: roleId } } }
           )),
         },
+      },
+    });
+  }
+
+  public async createGoogleUser(userDto: CreateGoogleUserDto): Promise<User> {
+    return this.prismaService.user.create({
+      data: {
+        password: "",
+        ...userDto,
       },
     });
   }

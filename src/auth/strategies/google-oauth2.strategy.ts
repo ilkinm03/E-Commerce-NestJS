@@ -14,8 +14,8 @@ export class GoogleOauth2Strategy extends PassportStrategy(Strategy, "google") {
     }
 
     public async validate(
-      accessToken: string,
-      refreshToken: string,
+      _accessToken: string,
+      _refreshToken: string,
       profile: any,
       done: VerifyCallback,
     ): Promise<void> {

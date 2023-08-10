@@ -15,6 +15,7 @@ import {
 @Module({
   imports: [
     JwtModule.register({}),
+    UsersModule
   ],
   controllers: [AuthController],
   providers: [

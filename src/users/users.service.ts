@@ -3,7 +3,7 @@ import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { Prisma, User } from "@prisma/client";
 import { Cache } from "cache-manager";
 import { PrismaService } from "../prisma/prisma.service";
-import { CreateUserDto, UpdateUserDto } from "./dtos";
+import { CreateGoogleUserDto, CreateUserDto, UpdateUserDto } from "./dtos";
 
 @Injectable()
 export class UsersService {
@@ -46,6 +46,15 @@ export class UsersService {
   public async create(userDto: CreateUserDto): Promise<User> {
     return this.prismaService.user.create({
       data: userDto,
+    });
+  }
+
+  public async createGoogleUser(userDto: CreateGoogleUserDto): Promise<User> {
+    return this.prismaService.user.create({
+      data: {
+        password: "",
+        ...userDto,
+      },
     });
   }
 

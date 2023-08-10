@@ -4,7 +4,7 @@ import { ConfigService } from "../../config/config.service";
 import { IGoogleUser } from "../../users/interfaces";
 
 export class GoogleOauth2Strategy extends PassportStrategy(Strategy, "google") {
-    constructor(private readonly configService: ConfigService) {
+    constructor(public readonly configService: ConfigService) {
       super({
         clientID: configService.googleOauthClientId,
         clientSecret: configService.googleOauthClientSecert,

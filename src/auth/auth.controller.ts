@@ -1,13 +1,18 @@
 import {
   Body,
-  Controller,
+  Controller, Get,
   HttpCode,
   HttpStatus,
-  Post,
+  Post, Req,
   UseGuards,
 } from "@nestjs/common";
 import { CurrentUser } from "../common/decorators";
-import { JwtAuthGuard, JwtRefreshGuard } from "../common/guards";
+import {
+  GoogleOauth2Guard,
+  JwtAuthGuard,
+  JwtRefreshGuard,
+} from "../common/guards";
+import { IGoogleUser } from "../users/interfaces";
 import { AuthService } from "./auth.service";
 import { LoginDto, SignupDto } from "./dtos";
 import { ITokens } from "./interfaces";
@@ -45,5 +50,17 @@ export class AuthController {
     @CurrentUser("refreshToken") refreshToken: string,
   ): Promise<ITokens> {
     return this.authService.refresh(userId, refreshToken);
+  }
+
+  @Get("/google")
+  @UseGuards(GoogleOauth2Guard)
+  public async googleLogin(): Promise<void> {}
+
+  @Get("/google/callback")
+  @UseGuards(GoogleOauth2Guard)
+  public async googleCallback(@Req() request: Request & {
+    user: IGoogleUser
+  }): Promise<ITokens> {
+    return this.authService.googleLogin(request.user);
   }
 }

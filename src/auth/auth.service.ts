@@ -104,6 +104,7 @@ export class AuthService {
       const tokens: ITokens = await this.getTokens({
         sub: existingUser.id,
         email: existingUser.email,
+        permissions: [],
       });
       await this.updateRefreshToken(existingUser.id, tokens.refreshToken);
       return tokens;
@@ -118,6 +119,7 @@ export class AuthService {
     const tokens: ITokens = await this.getTokens({
       sub: createdUser.id,
       email: createdUser.email,
+      permissions: [],
     });
     await this.updateRefreshToken(createdUser.id, tokens.refreshToken);
     return tokens;

@@ -7,8 +7,12 @@ import { PrismaService } from "./prisma/prisma.service";
 async function bootstrap(): Promise<void> {
   const app: INestApplication = await NestFactory.create(AppModule);
   const prismaService: PrismaService = app.get(PrismaService);
-  await prismaService.enableShutdownHooks(app);
+  prismaService.enableShutdownHooks(app);
   const swaggerConfig: Omit<OpenAPIObject, "paths"> = new DocumentBuilder()
+    .addSecurity("jwt", {
+      type: "http",
+      scheme: "bearer",
+    })
     .setTitle("E-Commerce Application")
     .setDescription("The e-commerce API documentation")
     .setVersion("0.0.1")

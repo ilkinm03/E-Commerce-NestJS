@@ -9,7 +9,11 @@ async function bootstrap(): Promise<void> {
   const prismaService: PrismaService = app.get(PrismaService);
   prismaService.enableShutdownHooks(app);
   const swaggerConfig: Omit<OpenAPIObject, "paths"> = new DocumentBuilder()
-    .addSecurity("jwt", {
+    .addSecurity("jwt-access", {
+      type: "http",
+      scheme: "bearer",
+    })
+    .addSecurity("jwt-refresh", {
       type: "http",
       scheme: "bearer",
     })

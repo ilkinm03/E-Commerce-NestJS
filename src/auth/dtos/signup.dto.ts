@@ -60,7 +60,6 @@ export class SignupDto {
 
   @ApiProperty({
     description: "Roles of the user",
-    isArray: true,
     type: "array",
     items: {
       type: "number",

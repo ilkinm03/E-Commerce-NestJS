@@ -95,6 +95,10 @@ export class UsersController {
   @ApiBody({
     type: UpdateUserDto,
   })
+  @ApiParam({
+    description: "Id of the user",
+    name: "id",
+  })
   @Patch(":id")
   @HttpCode(HttpStatus.OK)
   public async updateUser(

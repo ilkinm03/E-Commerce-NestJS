@@ -8,13 +8,14 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { Order } from "@prisma/client";
-import { CurrentUser } from "../common/decorators";
+import { CurrentUser, Serialize } from "../common/decorators";
 import { JwtAuthGuard } from "../common/guards";
-import { CreateOrderDto } from "./dtos";
+import { CreateOrderDto, OrderDto } from "./dtos";
 import { OrdersService } from "./orders.service";
 
 @UseGuards(JwtAuthGuard)
 @Controller("orders")
+@Serialize(OrderDto)
 export class OrdersController {
   constructor(
     private readonly ordersService: OrdersService,

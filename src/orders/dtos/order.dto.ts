@@ -1,4 +1,4 @@
-import { Expose, Transform, TransformFnParams } from "class-transformer";
+import { Expose, Transform } from "class-transformer";
 import { ProductDto } from "../../products/dtos";
 
 export class OrderDto {

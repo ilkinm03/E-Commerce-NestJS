@@ -1,4 +1,8 @@
-import { Injectable, ServiceUnavailableException } from "@nestjs/common";
+import {
+  Injectable,
+  NotFoundException,
+  ServiceUnavailableException,
+} from "@nestjs/common";
 import { Order, Prisma, Product } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { ProductsService } from "../products/products.service";
@@ -15,6 +19,16 @@ export class OrdersService {
 
   public async getOrders(): Promise<Order[]> {
     return this.prismaService.order.findMany();
+  }
+
+  public async getOrderById(id: number): Promise<Order> {
+    const order: Order = await this.prismaService.order.findUnique({
+      where: { id },
+    });
+    if (!order) {
+      throw new NotFoundException("order not found");
+    }
+    return order;
   }
 
   public async createOrderTransaction(

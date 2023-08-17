@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  UseGuards,
+} from "@nestjs/common";
 import { Order } from "@prisma/client";
 import { CurrentUser } from "../common/decorators";
 import { JwtAuthGuard } from "../common/guards";
@@ -23,5 +31,13 @@ export class OrdersController {
   @Get()
   public async getOrders(): Promise<Order[]> {
     return this.ordersService.getOrders();
+  }
+
+  @Get(":id")
+  public async getOrder(@Param(
+    "id",
+    ParseIntPipe,
+  ) id: number): Promise<Order> {
+    return this.ordersService.getOrderById(id);
   }
 }

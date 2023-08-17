@@ -23,31 +23,41 @@ model User {
 }
 
 model Product {
-  id          Int      @id @default(autoincrement())
-  title       String   @db.VarChar(64)
-  description String   @db.VarChar(128)
-  price       Float    @db.Real
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-  order       Order?   @relation(fields: [orderId], references: [id])
-  orderId     Int?
+  id          Int               @id @default(autoincrement())
+  title       String            @db.VarChar(64)
+  description String            @db.VarChar(128)
+  price       Float             @db.Real
+  created_at  DateTime          @default(now())
+  updated_at  DateTime          @updatedAt
+  orders      ProductsOnOrder[]
+}
+
+model ProductsOnOrder {
+  product    Product  @relation(fields: [product_id], references: [id])
+  product_id Int
+  order      Order    @relation(fields: [order_id], references: [id])
+  order_id   Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@id([product_id, order_id])
 }
 
 model Order {
-  id              Int       @id @default(autoincrement())
-  order_no        String    @unique
-  products        Product[]
-  total_price     Float     @default(0) @db.Real
-  user            User      @relation(fields: [userId], references: [id])
+  id              Int               @id @default(autoincrement())
+  order_no        String            @unique
+  total_price     Float             @default(0) @db.Real
+  user            User              @relation(fields: [userId], references: [id])
   userId          Int
   payment_method  String?
-  payment_status  String    @default("pending")
-  transaction_id  Int?      @unique
+  payment_status  String            @default("pending")
+  transaction_id  Int?              @unique
   shipping_method String?
-  tracking_number String?   @unique
-  order_status    String?   @default("pending")
-  order_date      DateTime  @default(now()) @db.Timestamp()
+  tracking_number String?           @unique
+  order_status    String?           @default("pending")
+  order_date      DateTime          @default(now()) @db.Timestamp()
   delivery_date   DateTime?
-  created_at      DateTime  @default(now())
-  updated_at      DateTime  @updatedAt
+  created_at      DateTime          @default(now())
+  updated_at      DateTime          @updatedAt
+  OrdersOnProduct ProductsOnOrder[]
 }

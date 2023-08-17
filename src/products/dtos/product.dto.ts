@@ -1,6 +1,6 @@
 import { Expose } from "class-transformer";
 
-type ProductEntity = { product: ProductDto };
+type ProductEntity = { product?: ProductDto };
 
 export class ProductDto {
   @Expose()
@@ -16,13 +16,13 @@ export class ProductDto {
   price: number;
 
   public static transformEntity(entity: ProductEntity[]): ProductDto[] {
-    return entity.map((value: ProductEntity): ProductDto => (
+    return entity?.map((value: ProductEntity): ProductDto => (
       {
         id: value.product.id,
         title: value.product.title,
         description: value.product.description,
         price: value.product.price,
       }
-    ));
+    )) ?? [];
   }
 }

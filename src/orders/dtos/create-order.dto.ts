@@ -1,6 +1,5 @@
 import {
   IsArray,
-  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
@@ -25,8 +24,4 @@ export class CreateOrderDto {
 
   @IsArray()
   products: number[];
-
-  @IsNotEmpty()
-  @IsNumber()
-  total_price: number;
 }

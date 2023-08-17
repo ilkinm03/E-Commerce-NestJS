@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
 import { Order } from "@prisma/client";
 import { CurrentUser } from "../common/decorators";
 import { JwtAuthGuard } from "../common/guards";
@@ -15,8 +15,13 @@ export class OrdersController {
   @Post()
   public async createOrder(
     @CurrentUser("sub") userId: number,
-    @Body() createOrderDto: CreateOrderDto
+    @Body() createOrderDto: CreateOrderDto,
   ): Promise<Order> {
     return this.ordersService.createOrderTransaction(userId, createOrderDto);
+  }
+
+  @Get()
+  public async getOrders(): Promise<Order[]> {
+    return this.ordersService.getOrders();
   }
 }

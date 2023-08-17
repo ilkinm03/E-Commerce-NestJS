@@ -13,6 +13,10 @@ export class OrdersService {
     private readonly usersService: UsersService,
   ) {}
 
+  public async getOrders(): Promise<Order[]> {
+    return this.prismaService.order.findMany();
+  }
+
   public async createOrderTransaction(
     userId: number,
     createOrderDto: CreateOrderDto,
@@ -27,7 +31,11 @@ export class OrdersService {
         );
         const orderTotalPrice: number = await this.calculateOrderTotalPrice(
           products);
-        await this.updateOrderTotalPrice(prisma, createdOrder.id, orderTotalPrice);
+        await this.updateOrderTotalPrice(
+          prisma,
+          createdOrder.id,
+          orderTotalPrice,
+        );
         await this.usersService.updateUserOrders(
           prisma,
           userId,

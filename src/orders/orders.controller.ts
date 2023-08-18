@@ -11,6 +11,7 @@ import { Order } from "@prisma/client";
 import { CurrentUser, Serialize } from "../common/decorators";
 import { JwtAuthGuard } from "../common/guards";
 import { CreateOrderDto, OrderDto } from "./dtos";
+import { OrderOwnerGuard } from "./guards";
 import { OrdersService } from "./orders.service";
 
 @UseGuards(JwtAuthGuard)
@@ -32,6 +33,15 @@ export class OrdersController {
   @Get()
   public async getOrders(): Promise<Order[]> {
     return this.ordersService.getOrders();
+  }
+
+  @UseGuards(OrderOwnerGuard)
+  @Patch("cancel/:id")
+  public async cancelOrder(@Param(
+    "id",
+    ParseIntPipe,
+  ) id: number): Promise<Order> {
+    return this.ordersService.cancelOrder(id);
   }
 
   @Get(":id")

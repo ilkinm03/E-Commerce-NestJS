@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ForbiddenException,
   Injectable,
   NotFoundException,
   ServiceUnavailableException,
@@ -41,7 +40,7 @@ export class OrdersService {
     return order;
   }
 
-  public async cancelOrder(id: number, userId: number): Promise<Order> {
+  public async cancelOrder(id: number): Promise<Order> {
     const order: Order = await this.getOrderById(id);
     const nonCancellableOrderStatuses: OrderStatuses[] = [
       OrderStatuses.SHIPPED,
@@ -49,9 +48,6 @@ export class OrdersService {
     ];
     if (nonCancellableOrderStatuses.includes(order.order_status as OrderStatuses)) {
       throw new BadRequestException("cannot cancel the order at this point");
-    }
-    if (userId != order.userId) {
-      throw new ForbiddenException("cannot cancel the order");
     }
     try {
       return await this.prismaService.order.update({

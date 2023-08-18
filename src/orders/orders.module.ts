@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { ProductsService } from "../products/products.service";
 import { UsersService } from "../users/users.service";
+import { OrderOwnerGuard } from "./guards";
 import { OrdersController } from "./orders.controller";
 import { OrdersService } from "./orders.service";
 
@@ -13,6 +14,7 @@ import { OrdersService } from "./orders.service";
     PrismaService,
     UsersService,
     ProductsService,
+    OrderOwnerGuard,
   ],
 })
 export class OrdersModule {

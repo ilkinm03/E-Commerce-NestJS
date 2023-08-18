@@ -9,7 +9,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { ProductsService } from "../products/products.service";
 import { UsersService } from "../users/users.service";
 import { OrderStatuses } from "./constants";
-import { CreateOrderDto } from "./dtos";
+import { CreateOrderDto, UpdateOrderDto } from "./dtos";
 
 @Injectable()
 export class OrdersService {
@@ -57,6 +57,17 @@ export class OrdersService {
     } catch (error) {
       throw new ServiceUnavailableException("cannot cancel the order");
     }
+  }
+
+  public async updateOrder(
+    orderId: number,
+    updateOrderDto: UpdateOrderDto,
+  ): Promise<Order> {
+    await this.getOrderById(orderId);
+    return this.prismaService.order.update({
+      where: { id: orderId },
+      data: updateOrderDto,
+    });
   }
 
   public async createOrderTransaction(

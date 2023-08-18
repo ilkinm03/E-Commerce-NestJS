@@ -10,7 +10,7 @@ import {
 import { Order } from "@prisma/client";
 import { CurrentUser, Serialize } from "../common/decorators";
 import { JwtAuthGuard } from "../common/guards";
-import { CreateOrderDto, OrderDto } from "./dtos";
+import { CreateOrderDto, OrderDto, UpdateOrderDto } from "./dtos";
 import { OrderOwnerGuard } from "./guards";
 import { OrdersService } from "./orders.service";
 
@@ -52,11 +52,11 @@ export class OrdersController {
     return this.ordersService.getOrderById(id);
   }
 
-  @Patch("/cancel/:id")
-  public async cancelOrder(@Param(
-    "id",
-    ParseIntPipe,
-  ) id: number, @CurrentUser("sub") userId: number): Promise<Order> {
-    return this.ordersService.cancelOrder(id, userId);
+  @Patch(":id")
+  public async updateOrder(
+    @Param("id", ParseIntPipe) orderId: number,
+    @Body() updateOrderDto: UpdateOrderDto,
+  ): Promise<Order> {
+    return this.ordersService.updateOrder(orderId, updateOrderDto);
   }
 }

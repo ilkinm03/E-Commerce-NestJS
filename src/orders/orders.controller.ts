@@ -3,7 +3,7 @@ import {
   Controller,
   Get,
   Param,
-  ParseIntPipe,
+  ParseIntPipe, Patch,
   Post,
   UseGuards,
 } from "@nestjs/common";
@@ -40,5 +40,13 @@ export class OrdersController {
     ParseIntPipe,
   ) id: number): Promise<Order> {
     return this.ordersService.getOrderById(id);
+  }
+
+  @Patch("/cancel/:id")
+  public async cancelOrder(@Param(
+    "id",
+    ParseIntPipe,
+  ) id: number, @CurrentUser("sub") userId: number): Promise<Order> {
+    return this.ordersService.cancelOrder(id, userId);
   }
 }

@@ -1,4 +1,6 @@
 import {
+  BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
   ServiceUnavailableException,
@@ -7,6 +9,7 @@ import { Order, Prisma, Product } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { ProductsService } from "../products/products.service";
 import { UsersService } from "../users/users.service";
+import { OrderStatuses } from "./constants";
 import { CreateOrderDto } from "./dtos";
 
 @Injectable()
@@ -36,6 +39,28 @@ export class OrdersService {
       throw new NotFoundException("order not found");
     }
     return order;
+  }
+
+  public async cancelOrder(id: number, userId: number): Promise<Order> {
+    const order: Order = await this.getOrderById(id);
+    const nonCancellableOrderStatuses: OrderStatuses[] = [
+      OrderStatuses.SHIPPED,
+      OrderStatuses.DELIVERED,
+    ];
+    if (nonCancellableOrderStatuses.includes(order.order_status as OrderStatuses)) {
+      throw new BadRequestException("cannot cancel the order at this point");
+    }
+    if (userId != order.userId) {
+      throw new ForbiddenException("cannot cancel the order");
+    }
+    try {
+      return await this.prismaService.order.update({
+        where: { id },
+        data: { order_status: OrderStatuses.CANCELED },
+      });
+    } catch (error) {
+      throw new ServiceUnavailableException("cannot cancel the order");
+    }
   }
 
   public async createOrderTransaction(

@@ -18,7 +18,14 @@ export class OrdersService {
   ) {}
 
   public async getOrders(): Promise<Order[]> {
-    return this.prismaService.order.findMany();
+    const includeProducts: Prisma.OrderInclude = {
+      products: {
+        include: { product: true },
+      },
+    };
+    return this.prismaService.order.findMany({
+      include: includeProducts,
+    });
   }
 
   public async getOrderById(id: number): Promise<Order> {

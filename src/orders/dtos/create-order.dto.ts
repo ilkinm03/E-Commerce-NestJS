@@ -11,16 +11,8 @@ export class CreateOrderDto {
   payment_method?: string;
 
   @IsOptional()
-  @IsNumber()
-  transaction_id?: number;
-
-  @IsOptional()
   @IsString()
   shipping_method?: string;
-
-  @IsOptional()
-  @IsString()
-  order_status?: string;
 
   @IsArray()
   products: number[];

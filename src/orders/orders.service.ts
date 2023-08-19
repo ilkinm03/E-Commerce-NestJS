@@ -70,6 +70,13 @@ export class OrdersService {
     });
   }
 
+  public async deleteOrder(id: number): Promise<Order> {
+    await this.getOrderById(id);
+    return this.prismaService.order.delete({
+      where: { id },
+    });
+  }
+
   public async createOrderTransaction(
     userId: number,
     createOrderDto: CreateOrderDto,

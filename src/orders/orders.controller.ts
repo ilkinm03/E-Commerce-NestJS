@@ -1,6 +1,6 @@
 import {
   Body,
-  Controller,
+  Controller, Delete,
   Get,
   Param,
   ParseIntPipe, Patch,
@@ -58,5 +58,13 @@ export class OrdersController {
     @Body() updateOrderDto: UpdateOrderDto,
   ): Promise<Order> {
     return this.ordersService.updateOrder(orderId, updateOrderDto);
+  }
+
+  @Delete(":id")
+  public async deleteOrder(@Param(
+    "id",
+    ParseIntPipe,
+  ) id: number): Promise<Order> {
+    return this.ordersService.deleteOrder(id);
   }
 }

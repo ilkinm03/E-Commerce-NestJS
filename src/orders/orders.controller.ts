@@ -7,6 +7,13 @@ import {
   Post,
   UseGuards,
 } from "@nestjs/common";
+import {
+  ApiBody,
+  ApiConflictResponse,
+  ApiOkResponse,
+  ApiServiceUnavailableResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 import { Order } from "@prisma/client";
 import { CurrentUser, Serialize } from "../common/decorators";
 import { JwtAuthGuard } from "../common/guards";
@@ -14,6 +21,7 @@ import { CreateOrderDto, OrderDto, UpdateOrderDto } from "./dtos";
 import { OrderOwnerGuard } from "./guards";
 import { OrdersService } from "./orders.service";
 
+@ApiTags("orders")
 @UseGuards(JwtAuthGuard)
 @Controller("orders")
 @Serialize(OrderDto)
@@ -22,6 +30,14 @@ export class OrdersController {
     private readonly ordersService: OrdersService,
   ) {}
 
+  @ApiOkResponse({
+    description: "Creates and returns the order",
+    type: OrderDto,
+  })
+  @ApiServiceUnavailableResponse({
+    description: "Order failed",
+  })
+  @ApiBody({ type: CreateOrderDto })
   @Post()
   public async createOrder(
     @CurrentUser("sub") userId: number,

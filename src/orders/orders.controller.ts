@@ -9,7 +9,7 @@ import {
 } from "@nestjs/common";
 import {
   ApiBody,
-  ApiOkResponse,
+  ApiOkResponse, ApiParam,
   ApiServiceUnavailableResponse,
   ApiTags,
 } from "@nestjs/swagger";
@@ -54,6 +54,14 @@ export class OrdersController {
     return this.ordersService.getOrders();
   }
 
+  @ApiOkResponse({
+    description: "Cancels the placed order",
+    type: OrderDto,
+  })
+  @ApiParam({
+    description: "Id of the order",
+    name: "id"
+  })
   @UseGuards(OrderOwnerGuard)
   @Patch("cancel/:id")
   public async cancelOrder(@Param(

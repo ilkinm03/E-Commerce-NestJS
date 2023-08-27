@@ -9,7 +9,6 @@ import {
 } from "@nestjs/common";
 import {
   ApiBody,
-  ApiConflictResponse,
   ApiOkResponse,
   ApiServiceUnavailableResponse,
   ApiTags,
@@ -46,6 +45,10 @@ export class OrdersController {
     return this.ordersService.createOrderTransaction(userId, createOrderDto);
   }
 
+  @ApiOkResponse({
+    description: "Returns all the orders",
+    type: [OrderDto],
+  })
   @Get()
   public async getOrders(): Promise<Order[]> {
     return this.ordersService.getOrders();

@@ -8,7 +8,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import {
-  ApiBody,
+  ApiBody, ApiNotFoundResponse,
   ApiOkResponse, ApiParam,
   ApiServiceUnavailableResponse,
   ApiTags,
@@ -71,6 +71,17 @@ export class OrdersController {
     return this.ordersService.cancelOrder(id);
   }
 
+  @ApiOkResponse({
+    description: "Returns an order with the provided id",
+    type: OrderDto,
+  })
+  @ApiNotFoundResponse({
+    description: "The order with the provided id not found",
+  })
+  @ApiParam({
+    description: "Id of the order",
+    name: "id"
+  })
   @Get(":id")
   public async getOrder(@Param(
     "id",

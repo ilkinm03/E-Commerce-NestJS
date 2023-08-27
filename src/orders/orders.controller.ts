@@ -90,6 +90,15 @@ export class OrdersController {
     return this.ordersService.getOrderById(id);
   }
 
+  @ApiOkResponse({
+    description: "Updates an order with the provided id",
+    type: OrderDto,
+  })
+  @ApiParam({
+    description: "Id of the order",
+    name: "id"
+  })
+  @ApiBody({ type: UpdateOrderDto })
   @Patch(":id")
   public async updateOrder(
     @Param("id", ParseIntPipe) orderId: number,

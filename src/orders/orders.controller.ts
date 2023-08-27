@@ -96,7 +96,7 @@ export class OrdersController {
   })
   @ApiParam({
     description: "Id of the order",
-    name: "id"
+    name: "id",
   })
   @ApiBody({ type: UpdateOrderDto })
   @Patch(":id")
@@ -107,6 +107,17 @@ export class OrdersController {
     return this.ordersService.updateOrder(orderId, updateOrderDto);
   }
 
+  @ApiOkResponse({
+    description: "Deletes an order with the provided id",
+    type: OrderDto,
+  })
+  @ApiNotFoundResponse({
+    description: "Order with the provided id not found",
+  })
+  @ApiParam({
+    description: "Id of the order",
+    name: "id",
+  })
   @Delete(":id")
   public async deleteOrder(@Param(
     "id",

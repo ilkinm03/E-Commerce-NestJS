@@ -10,6 +10,12 @@ import {
   Query,
   UseGuards,
 } from "@nestjs/common";
+import {
+  ApiBody,
+  ApiConflictResponse,
+  ApiOkResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 import { Role } from "@prisma/client";
 import { PermissionsRequired, Serialize } from "../common/decorators";
 import { PermissionsEnum } from "../common/enums";
@@ -22,6 +28,7 @@ import {
 } from "./dtos";
 import { RolesService } from "./roles.service";
 
+@ApiTags("roles")
 @Controller("roles")
 @UseGuards(JwtAuthGuard, PermissionsRequiredGuard)
 @PermissionsRequired(PermissionsEnum.ROLES_READ, PermissionsEnum.ROLES_WRITE)
@@ -29,6 +36,14 @@ import { RolesService } from "./roles.service";
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
+  @ApiOkResponse({
+    description: "Creates and returns the role",
+    type: RolesDto,
+  })
+  @ApiConflictResponse({
+    description: "Role with the provided title already exists",
+  })
+  @ApiBody({ type: CreateRoleDto })
   @Post()
   public async createRole(@Body() createRoleDto: CreateRoleDto): Promise<Role> {
     return this.rolesService.createRole(createRoleDto);

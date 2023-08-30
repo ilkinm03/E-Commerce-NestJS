@@ -86,6 +86,11 @@ export class RolesController {
     return this.rolesService.addPermission(addPermissionDto);
   }
 
+  @ApiOkResponse({
+    description: "Provoke a role from a permission and return the role",
+    type: RolesDto,
+  })
+  @ApiBody({ type: RemovePermissionDto })
   @Patch("provoke")
   public async provokePermission(@Body() removePermissionDto: RemovePermissionDto): Promise<Role> {
     return this.rolesService.removePermission(removePermissionDto);

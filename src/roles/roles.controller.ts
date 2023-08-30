@@ -13,7 +13,7 @@ import {
 import {
   ApiBody,
   ApiConflictResponse,
-  ApiOkResponse,
+  ApiOkResponse, ApiQuery,
   ApiTags,
 } from "@nestjs/swagger";
 import { Role } from "@prisma/client";
@@ -49,6 +49,15 @@ export class RolesController {
     return this.rolesService.createRole(createRoleDto);
   }
 
+  @ApiOkResponse({
+    description: "Returns all the roles",
+    type: [RolesDto],
+  })
+  @ApiQuery({
+    description: "Title of the role",
+    name: "title",
+    type: String,
+  })
   @Get()
   public async getRoles(@Query("title") title?: string): Promise<Role[]> {
     return this.rolesService.getRoles(title);

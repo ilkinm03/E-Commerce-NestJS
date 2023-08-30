@@ -90,6 +90,17 @@ export class PermissionsController {
     return this.permissionsService.updatePermission(updatePermissionDto);
   }
 
+  @ApiOkResponse({
+    description: "Deletes and returns the permission",
+    type: PermissionsDto,
+  })
+  @ApiNotFoundResponse({
+    description: "Permission with the provided id not found",
+  })
+  @ApiParam({
+    description: "Id of the permission",
+    name: "id",
+  })
   @Delete(":id")
   public async deletePermission(@Param(
     "id",

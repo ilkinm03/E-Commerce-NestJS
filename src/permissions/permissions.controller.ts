@@ -77,6 +77,14 @@ export class PermissionsController {
     return this.permissionsService.createPermission(createPermissionsDto);
   }
 
+  @ApiOkResponse({
+    description: "Updates and returns the permission",
+    type: PermissionsDto,
+  })
+  @ApiNotFoundResponse({
+    description: "Permission with the provided title not found",
+  })
+  @ApiBody({ type: UpdatePermissionDto })
   @Patch()
   public async updatePermission(@Body() updatePermissionDto: UpdatePermissionDto): Promise<Permission> {
     return this.permissionsService.updatePermission(updatePermissionDto);

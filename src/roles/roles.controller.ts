@@ -76,6 +76,11 @@ export class RolesController {
     return this.rolesService.getRoleById(id);
   }
 
+  @ApiOkResponse({
+    description: "Grant a role with a permission and return the role",
+    type: RolesDto
+  })
+  @ApiBody({ type: AddPermissionDto })
   @Patch("grant")
   public async grantPermission(@Body() addPermissionDto: AddPermissionDto): Promise<Role> {
     return this.rolesService.addPermission(addPermissionDto);

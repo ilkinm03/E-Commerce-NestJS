@@ -96,6 +96,14 @@ export class RolesController {
     return this.rolesService.removePermission(removePermissionDto);
   }
 
+  @ApiOkResponse({
+    description: "Deletes and returns the role",
+    type: RolesDto,
+  })
+  @ApiParam({
+    description: "Id of the role",
+    name: "id",
+  })
   @Delete(":id")
   public async deleteRole(@Param("id", ParseIntPipe) id: number): Promise<Role> {
     return this.rolesService.deleteRoleById(id);

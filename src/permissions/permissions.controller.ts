@@ -9,7 +9,12 @@ import {
   Post,
   UseGuards,
 } from "@nestjs/common";
-import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiParam,
+  ApiTags,
+} from "@nestjs/swagger";
 import { Permission } from "@prisma/client";
 import { PermissionsRequired, Serialize } from "../common/decorators";
 import { PermissionsEnum } from "../common/enums";
@@ -38,6 +43,17 @@ export class PermissionsController {
     return this.permissionsService.getPermissions();
   }
 
+  @ApiOkResponse({
+    description: "Finds a permission with the provided id",
+    type: PermissionsDto
+  })
+  @ApiNotFoundResponse({
+    description: "No permission found with the provided id",
+  })
+  @ApiParam({
+    description: "Id of the permission",
+    name: "id",
+  })
   @Get(":id")
   public async getPermissionById(@Param(
     "id",

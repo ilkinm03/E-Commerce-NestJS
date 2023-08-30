@@ -10,6 +10,8 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import {
+  ApiBody,
+  ApiConflictResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
@@ -62,6 +64,14 @@ export class PermissionsController {
     return this.permissionsService.findUniquePermissionById(id);
   }
 
+  @ApiOkResponse({
+    description: "Creates and returns the permission",
+    type: PermissionsDto,
+  })
+  @ApiConflictResponse({
+    description: "A permission already exists with the provided title",
+  })
+  @ApiBody({ type: CreatePermissionDto  })
   @Post()
   public async createPermission(@Body() createPermissionsDto: CreatePermissionDto): Promise<Permission> {
     return this.permissionsService.createPermission(createPermissionsDto);

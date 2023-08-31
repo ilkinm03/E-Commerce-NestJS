@@ -11,6 +11,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiConflictResponse,
   ApiOkResponse, ApiParam, ApiQuery,
@@ -28,6 +29,7 @@ import {
 } from "./dtos";
 import { RolesService } from "./roles.service";
 
+@ApiBearerAuth("jwt-access")
 @ApiTags("roles")
 @Controller("roles")
 @UseGuards(JwtAuthGuard, PermissionsRequiredGuard)

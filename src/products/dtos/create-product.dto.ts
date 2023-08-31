@@ -5,7 +5,6 @@ import {
   IsString,
   Length,
   Max,
-  Min,
 } from "class-validator";
 
 export class CreateProductDto {

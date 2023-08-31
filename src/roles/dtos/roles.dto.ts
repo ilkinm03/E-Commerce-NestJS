@@ -18,9 +18,8 @@ export class RolesDto {
   title: string;
 
   @ApiProperty({
-    description: "Array of permission IDs",
+    description: "Array of permissions",
     type: [PermissionsDto],
-    example: [1],
   })
   @Expose()
   @Transform(({ value }) => value?.map(p => (

@@ -8,6 +8,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import {
+  ApiBearerAuth,
   ApiBody, ApiNotFoundResponse,
   ApiOkResponse, ApiParam,
   ApiServiceUnavailableResponse,
@@ -20,6 +21,7 @@ import { CreateOrderDto, OrderDto, UpdateOrderDto } from "./dtos";
 import { OrderOwnerGuard } from "./guards";
 import { OrdersService } from "./orders.service";
 
+@ApiBearerAuth("jwt-access")
 @ApiTags("orders")
 @UseGuards(JwtAuthGuard)
 @Controller("orders")

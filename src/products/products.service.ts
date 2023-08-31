@@ -80,7 +80,6 @@ export class ProductsService {
       });
       return product;
     } catch (error) {
-      console.log(error);
       throw new UnprocessableEntityException("cannot delete the product");
     }
   }

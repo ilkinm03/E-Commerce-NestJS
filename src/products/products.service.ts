@@ -1,5 +1,10 @@
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
-import { Inject, Injectable, NotFoundException } from "@nestjs/common";
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from "@nestjs/common";
 import { Product } from "@prisma/client";
 import { Cache } from "cache-manager";
 import { PrismaService } from "../prisma/prisma.service";
@@ -68,10 +73,15 @@ export class ProductsService {
   }
 
   public async delete(id: number): Promise<Product> {
-    return this.prismaService.product.delete({
-      where: {
-        id,
-      },
-    });
+    const product: Product = await this.product(id);
+    try {
+      await this.prismaService.product.delete({
+        where: { id },
+      });
+      return product;
+    } catch (error) {
+      console.log(error);
+      throw new UnprocessableEntityException("cannot delete the product");
+    }
   }
 }

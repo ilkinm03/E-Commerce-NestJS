@@ -8,7 +8,7 @@ import {
 } from "@nestjs/common";
 import {
   ApiBearerAuth,
-  ApiBody, ApiNotFoundResponse,
+  ApiBody, ApiCreatedResponse, ApiNotFoundResponse,
   ApiOkResponse, ApiParam,
   ApiTags,
 } from "@nestjs/swagger";
@@ -27,7 +27,7 @@ export class ProductsController {
   ) {}
 
   @ApiBearerAuth("jwt-access")
-  @ApiOkResponse({
+  @ApiCreatedResponse({
     description: "Creates and returns the product",
     type: ProductDto,
   })

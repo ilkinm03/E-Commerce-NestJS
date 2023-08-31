@@ -31,6 +31,7 @@ export class CreateUserDto {
     description: "Email address of the user",
     minLength: 1,
     maxLength: 40,
+    example: "test@test.com",
   })
   @IsNotEmpty()
   @IsEmail()
@@ -49,7 +50,12 @@ export class CreateUserDto {
 
   @ApiProperty({
     description: "Role list of the user",
-    uniqueItems: true,
+    type: "array",
+    items: {
+      type: "number",
+      uniqueItems: true,
+    },
+    example: [1],
   })
   @IsNotEmpty()
   @IsNumber({}, { each: true })

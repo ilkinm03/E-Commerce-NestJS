@@ -12,6 +12,7 @@ export class OrderDto {
 
   @ApiProperty({
     description: "Products included inside the order",
+    type: [ProductDto],
   })
   @Expose()
   @Transform(({ value }) => ProductDto.transformEntity(value))

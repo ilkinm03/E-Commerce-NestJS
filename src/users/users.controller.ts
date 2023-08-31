@@ -8,6 +8,7 @@ import {
   Query, UseGuards,
 } from "@nestjs/common";
 import {
+  ApiBearerAuth,
   ApiBody, ApiConflictResponse,
   ApiNotFoundResponse,
   ApiOkResponse, ApiParam,
@@ -24,6 +25,7 @@ import {
 } from "./dtos";
 import { UsersService } from "./users.service";
 
+@ApiBearerAuth("jwt-access")
 @ApiTags("users")
 @Controller("/users")
 @Serialize(UserDto)

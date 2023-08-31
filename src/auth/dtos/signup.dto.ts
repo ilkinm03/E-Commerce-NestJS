@@ -32,6 +32,7 @@ export class SignupDto {
     description: "Email of the user",
     minLength: 1,
     maxLength: 30,
+    example: "test@test.com",
   })
   @IsNotEmpty()
   @IsEmail()
@@ -65,6 +66,7 @@ export class SignupDto {
       type: "number",
       uniqueItems: true,
     },
+    example: [1],
   })
   @IsNotEmpty()
   @IsNumber({}, { each: true })

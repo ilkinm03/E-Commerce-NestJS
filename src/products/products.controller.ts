@@ -10,7 +10,7 @@ import {
   ApiBearerAuth,
   ApiBody, ApiCreatedResponse, ApiNotFoundResponse,
   ApiOkResponse, ApiParam,
-  ApiTags,
+  ApiTags, ApiUnprocessableEntityResponse,
 } from "@nestjs/swagger";
 import { Product } from "@prisma/client";
 import { Serialize } from "../common/decorators";
@@ -99,6 +99,9 @@ export class ProductsController {
   })
   @ApiNotFoundResponse({
     description: "The product with the provided id not found",
+  })
+  @ApiUnprocessableEntityResponse({
+    description: "The product is associated with an order",
   })
   @ApiParam({
     description: "Id of the product",

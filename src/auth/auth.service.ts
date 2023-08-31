@@ -1,12 +1,11 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-} from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { User } from "@prisma/client";
+import { Permission, Role, User } from "@prisma/client";
 import * as bcrypt from "bcrypt";
 import { ConfigService } from "../config/config.service";
+import { IGoogleUser } from "../users/interfaces";
+import { PermissionsService } from "../roles/permissions.service";
+import { RolesService } from "../roles/roles.service";
 import { UsersService } from "../users/users.service";
 import { LoginDto, SignupDto } from "./dtos";
 import { ITokens, TokenPayload } from "./interfaces";
@@ -15,6 +14,8 @@ import { ITokens, TokenPayload } from "./interfaces";
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
+    private readonly rolesService: RolesService,
+    private readonly permissionsService: PermissionsService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
@@ -28,21 +29,20 @@ export class AuthService {
     if (password !== confirm_password) {
       throw new BadRequestException("passwords not match");
     }
-    try {
-      const hashedPassword: string = await bcrypt.hash(password, 10);
-      const user: User = await this.usersService.create({
-        password: hashedPassword,
-        ...userData,
-      });
-      const tokens: ITokens = await this.getTokens({
-        sub: user.id,
-        email: user.email,
-      });
-      await this.updateRefreshToken(user.id, tokens.refreshToken);
-      return tokens;
-    } catch (error) {
-      throw new ConflictException("email is already in use");
-    }
+    const hashedPassword: string = await bcrypt.hash(password, 10);
+    const user: User = await this.usersService.create({
+      password: hashedPassword,
+      ...userData,
+    });
+    const { permissions: userPermissions } = await this.getRolesAndPermissions(
+      user.id);
+    const tokens: ITokens = await this.getTokens({
+      sub: user.id,
+      email: user.email,
+      permissions: userPermissions.map(p => p.title),
+    });
+    await this.updateRefreshToken(user.id, tokens.refreshToken);
+    return tokens;
   }
 
   public async login(loginDto: LoginDto): Promise<ITokens> {
@@ -57,9 +57,12 @@ export class AuthService {
     if (!isPasswordsMatching) {
       throw new BadRequestException("email or password is wrong");
     }
+    const { permissions: userPermissions } = await this.getRolesAndPermissions(
+      user.id);
     const tokens: ITokens = await this.getTokens({
       sub: user.id,
       email: user.email,
+      permissions: userPermissions.map(p => p.title),
     });
     await this.updateRefreshToken(user.id, tokens.refreshToken);
     return tokens;
@@ -71,7 +74,10 @@ export class AuthService {
 
   public async refresh(userId: number, refreshToken: string): Promise<ITokens> {
     const user: User = await this.usersService.user(userId);
-    if (!user || !user.refresh_token) {
+    if (!user ||
+        (
+          user && !user.refresh_token
+        )) {
       throw new BadRequestException("credentials are incorrect");
     }
     const isRtMatches: boolean = await bcrypt.compare(
@@ -81,11 +87,41 @@ export class AuthService {
     if (!isRtMatches) {
       throw new BadRequestException("credentials are incorrect");
     }
+    const { permissions: userPermissions } = await this.getRolesAndPermissions(
+      user.id);
     const tokens: ITokens = await this.getTokens({
       sub: user.id,
       email: user.email,
+      permissions: userPermissions.map(p => p.title),
     });
     await this.updateRefreshToken(user.id, tokens.refreshToken);
+    return tokens;
+  }
+
+  public async googleLogin(user: IGoogleUser): Promise<ITokens> {
+    const [existingUser]: User[] = await this.usersService.users(user.email);
+    if (existingUser) {
+      const tokens: ITokens = await this.getTokens({
+        sub: existingUser.id,
+        email: existingUser.email,
+        permissions: [],
+      });
+      await this.updateRefreshToken(existingUser.id, tokens.refreshToken);
+      return tokens;
+    }
+    const createdUser: User = await this.usersService.createGoogleUser({
+      first_name: user.firstName,
+      last_name: user.lastName,
+      email: user.email,
+      provider: "google",
+      provided_id: user.providedId,
+    });
+    const tokens: ITokens = await this.getTokens({
+      sub: createdUser.id,
+      email: createdUser.email,
+      permissions: [],
+    });
+    await this.updateRefreshToken(createdUser.id, tokens.refreshToken);
     return tokens;
   }
 
@@ -112,5 +148,18 @@ export class AuthService {
   ): Promise<void> {
     const hashedRefreshToken: string = await bcrypt.hash(refreshToken, 10);
     await this.usersService.updateRefreshToken(userId, hashedRefreshToken);
+  }
+
+  private async getRolesAndPermissions(userId: number): Promise<{
+    roles: Role[],
+    permissions: Permission[]
+  }> {
+    const roles: Role[] = await this.rolesService.getRolesByUserId(userId);
+    const permissions: Permission[] = await this.permissionsService.getPermissionsByRoleIds(
+      roles.map(r => r.id));
+    return {
+      roles,
+      permissions,
+    };
   }
 }

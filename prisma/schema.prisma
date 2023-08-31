@@ -11,15 +11,57 @@ datasource db {
 }
 
 model User {
-  id            Int      @id @default(autoincrement())
+  id            Int            @id @default(autoincrement())
   first_name    String
   last_name     String
-  email         String   @unique
+  email         String         @unique
   password      String
-  refresh_token String?  @unique
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+  provider      String?        @default("local")
+  provided_id   String?        @unique
+  refresh_token String?        @unique
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
+  roles         RolesOnUsers[]
   orders        Order[]
+}
+
+model RolesOnUsers {
+  user       User     @relation(fields: [user_id], references: [id])
+  user_id    Int
+  role       Role     @relation(fields: [role_id], references: [id])
+  role_id    Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@id([user_id, role_id])
+}
+
+model Role {
+  id           Int                  @id @default(autoincrement())
+  title        String               @unique
+  permisisons  PermissionsOnRoles[]
+  created_at   DateTime             @default(now())
+  updated_at   DateTime             @updatedAt
+  RolesOnUsers RolesOnUsers[]
+}
+
+model Permission {
+  id         Int                  @id @default(autoincrement())
+  title      String               @unique
+  roles      PermissionsOnRoles[]
+  created_at DateTime             @default(now())
+  updated_at DateTime             @updatedAt
+}
+
+model PermissionsOnRoles {
+  role          Role       @relation(fields: [role_id], references: [id])
+  role_id       Int
+  permission    Permission @relation(fields: [permission_id], references: [id])
+  permission_id Int
+  created_at    DateTime   @default(now())
+  updated_at    DateTime   @updatedAt
+
+  @@id([permission_id, role_id])
 }
 
 model Product {

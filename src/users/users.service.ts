@@ -1,14 +1,21 @@
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
-import { Inject, Injectable, NotFoundException } from "@nestjs/common";
-import { Prisma, User } from "@prisma/client";
+import {
+  ConflictException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
+import { Prisma, Role, User } from "@prisma/client";
 import { Cache } from "cache-manager";
 import { PrismaService } from "../prisma/prisma.service";
-import { CreateUserDto, UpdateUserDto } from "./dtos";
+import { CreateGoogleUserDto, CreateUserDto, UpdateUserDto } from "./dtos";
+import { RolesService } from "../roles/roles.service";
 
 @Injectable()
 export class UsersService {
   constructor(
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+    private readonly rolesService: RolesService,
     private readonly prismaService: PrismaService,
   ) {}
 
@@ -44,8 +51,40 @@ export class UsersService {
   }
 
   public async create(userDto: CreateUserDto): Promise<User> {
+    const {
+      roles,
+      ...userData
+    }: CreateUserDto = userDto;
+    const isUserExists: User = await this.prismaService.user.findUnique({
+      where: {
+        email: userData.email,
+      },
+    });
+    if (isUserExists) {
+      throw new ConflictException("user already exists");
+    }
+    const roleEntities: Role[] = await this.rolesService.getRolesById(roles);
+    if (roleEntities.length !== userDto.roles.length) {
+      throw new NotFoundException("role not found");
+    }
     return this.prismaService.user.create({
-      data: userDto,
+      data: {
+        ...userData,
+        roles: {
+          create: roles.map((roleId: number) => (
+            { role: { connect: { id: roleId } } }
+          )),
+        },
+      },
+    });
+  }
+
+  public async createGoogleUser(userDto: CreateGoogleUserDto): Promise<User> {
+    return this.prismaService.user.create({
+      data: {
+        password: "",
+        ...userDto,
+      },
     });
   }
 

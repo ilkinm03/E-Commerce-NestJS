@@ -2,7 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
-  ServiceUnavailableException,
+  ServiceUnavailableException, UnprocessableEntityException,
 } from "@nestjs/common";
 import { Order, Prisma, Product } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
@@ -78,10 +78,15 @@ export class OrdersService {
   }
 
   public async deleteOrder(id: number): Promise<Order> {
-    await this.getOrderById(id);
-    return this.prismaService.order.delete({
-      where: { id },
-    });
+    const order: Order = await this.getOrderById(id);
+    try {
+      await this.prismaService.order.delete({
+        where: { id },
+      });
+      return order;
+    } catch (error) {
+      throw new UnprocessableEntityException("cannot delete the order");
+    }
   }
 
   public async createOrderTransaction(
@@ -161,5 +166,4 @@ export class OrdersService {
       0,
     );
   }
-
 }

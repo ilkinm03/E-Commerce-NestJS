@@ -33,7 +33,7 @@ import { RolesService } from "./roles.service";
 @ApiTags("roles")
 @Controller("roles")
 @UseGuards(JwtAuthGuard, PermissionsRequiredGuard)
-@PermissionsRequired(PermissionsEnum.ROLES_READ, PermissionsEnum.ROLES_WRITE)
+// @PermissionsRequired(PermissionsEnum.ROLES_READ, PermissionsEnum.ROLES_WRITE)
 @Serialize(RolesDto)
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
@@ -59,6 +59,7 @@ export class RolesController {
     description: "Title of the role",
     name: "title",
     type: String,
+    required: false,
   })
   @Get()
   public async getRoles(@Query("title") title?: string): Promise<Role[]> {

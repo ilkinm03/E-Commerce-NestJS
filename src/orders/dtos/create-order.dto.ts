@@ -1,32 +1,30 @@
+import { ApiProperty } from "@nestjs/swagger";
 import {
   IsArray,
-  IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
 } from "class-validator";
 
 export class CreateOrderDto {
+  @ApiProperty({
+    description: "The payment method",
+  })
   @IsOptional()
   @IsString()
   payment_method?: string;
 
-  @IsOptional()
-  @IsNumber()
-  transaction_id?: number;
-
+  @ApiProperty({
+    description: "The shipping method",
+  })
   @IsOptional()
   @IsString()
   shipping_method?: string;
 
-  @IsOptional()
-  @IsString()
-  order_status?: string;
-
+  @ApiProperty({
+    description: "The array of product IDs",
+    type: [Number],
+    example: [1],
+  })
   @IsArray()
   products: number[];
-
-  @IsNotEmpty()
-  @IsNumber()
-  total_price: number;
 }

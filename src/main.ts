@@ -1,6 +1,5 @@
 import {
   INestApplication,
-  VERSION_NEUTRAL,
   VersioningType,
 } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";

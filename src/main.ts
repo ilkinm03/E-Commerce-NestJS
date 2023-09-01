@@ -1,4 +1,8 @@
-import { INestApplication } from "@nestjs/common";
+import {
+  INestApplication,
+  VERSION_NEUTRAL,
+  VersioningType,
+} from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
@@ -6,6 +10,11 @@ import { PrismaService } from "./prisma/prisma.service";
 
 async function bootstrap(): Promise<void> {
   const app: INestApplication = await NestFactory.create(AppModule);
+  app.setGlobalPrefix("api");
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: ["1"],
+  });
   const prismaService: PrismaService = app.get(PrismaService);
   prismaService.enableShutdownHooks(app);
   const swaggerConfig: Omit<OpenAPIObject, "paths"> = new DocumentBuilder()

@@ -1,0 +1,9 @@
+version: "3.8"
+services:
+  main-db:
+    image: postgres:15.4-bullseye
+    restart: always
+    env_file:
+      - ./.env
+    ports:
+      - "5433:5432"

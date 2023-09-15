@@ -4,7 +4,7 @@ import { Permission, Role, User } from "@prisma/client";
 import * as bcrypt from "bcrypt";
 import { ConfigService } from "../config/config.service";
 import { IGoogleUser } from "../users/interfaces";
-import { PermissionsService } from "../roles/permissions.service";
+import { PermissionsService } from "../permissions/permissions.service";
 import { RolesService } from "../roles/roles.service";
 import { UsersService } from "../users/users.service";
 import { LoginDto, SignupDto } from "./dtos";

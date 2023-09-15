@@ -7,7 +7,7 @@ export class RolesDto {
     description: "Guid of the role",
   })
   @Expose()
-  id: string;
+  guid: string;
 
   @ApiProperty({
     description: "Title of the role",

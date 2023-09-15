@@ -13,6 +13,7 @@ import {
   ApiTags, ApiUnprocessableEntityResponse,
 } from "@nestjs/swagger";
 import { Product } from "@prisma/client";
+import { GenericResponse } from "../common/api";
 import { Serialize } from "../common/decorators";
 import { JwtAuthGuard } from "../common/guards";
 import { CreateProductDto, ProductDto, UpdateProductDto } from "./dtos";
@@ -36,7 +37,7 @@ export class ProductsController {
   })
   @Post()
   @UseGuards(JwtAuthGuard)
-  public async createProduct(@Body() productDto: CreateProductDto): Promise<Product> {
+  public async createProduct(@Body() productDto: CreateProductDto): Promise<GenericResponse> {
     return this.productsService.create(productDto);
   }
 
@@ -45,7 +46,7 @@ export class ProductsController {
     type: [ProductDto],
   })
   @Get()
-  public async findProducts(): Promise<Product[]> {
+  public async findProducts(): Promise<GenericResponse[]> {
     return this.productsService.products();
   }
 
@@ -60,12 +61,9 @@ export class ProductsController {
     description: "Id of the product",
     name: "id",
   })
-  @Get(":id")
-  public async findProductById(@Param(
-    "id",
-    ParseIntPipe,
-  ) id: number): Promise<Product> {
-    return this.productsService.product(id);
+  @Get(":guid")
+  public async findProductById(@Param("guid") guid: string): Promise<Product> {
+    return this.productsService.product(guid);
   }
 
   @ApiBearerAuth("jwt-access")
@@ -83,13 +81,13 @@ export class ProductsController {
     description: "Id of the product",
     name: "id",
   })
-  @Patch(":id")
+  @Patch(":guid")
   @UseGuards(JwtAuthGuard)
   public async updateProduct(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("guid") guid: string,
     @Body() productDto: UpdateProductDto,
-  ): Promise<Product> {
-    return this.productsService.update(id, productDto);
+  ): Promise<GenericResponse> {
+    return this.productsService.update(guid, productDto);
   }
 
   @ApiBearerAuth("jwt-access")
@@ -107,11 +105,11 @@ export class ProductsController {
     description: "Id of the product",
     name: "id",
   })
-  @Delete(":id")
+  @Delete(":guid")
   @UseGuards(JwtAuthGuard)
   public async deleteProduct(
-    @Param("id", ParseIntPipe) id: number,
-  ): Promise<Product> {
-    return this.productsService.delete(id);
+    @Param("guid") guid: string,
+  ): Promise<GenericResponse> {
+    return this.productsService.delete(guid);
   }
 }

@@ -9,7 +9,8 @@ import {
 import {
   ApiBearerAuth,
   ApiBody,
-  ApiConflictResponse, ApiExcludeEndpoint, ApiHeader, ApiNotFoundResponse,
+  ApiConflictResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiTags,
 } from "@nestjs/swagger";
@@ -84,10 +85,10 @@ export class AuthController {
   @UseGuards(JwtRefreshGuard)
   @HttpCode(HttpStatus.OK)
   public async refresh(
-    @CurrentUser("sub") userId: number,
+    @CurrentUser("sub") userGuid: string,
     @CurrentUser("refreshToken") refreshToken: string,
   ): Promise<ITokens> {
-    return this.authService.refresh(userId, refreshToken);
+    return this.authService.refresh(userGuid, refreshToken);
   }
 
   @Get("/google")

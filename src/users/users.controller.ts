@@ -16,6 +16,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { User } from "@prisma/client";
+import { GenericResponse } from "../common/api";
 import { Serialize } from "../common/decorators";
 import { JwtAuthGuard } from "../common/guards";
 import {
@@ -61,12 +62,9 @@ export class UsersController {
     description: "Id of the user",
     name: "id",
   })
-  @Get(":id")
-  public async findUserById(@Param(
-    "id",
-    ParseIntPipe,
-  ) id: number): Promise<User> {
-    return this.usersService.user(id);
+  @Get(":guid")
+  public async findUserById(@Param("guid") guid: string): Promise<User> {
+    return this.usersService.user(guid);
   }
 
   @ApiOkResponse({
@@ -80,7 +78,7 @@ export class UsersController {
     type: CreateUserDto,
   })
   @Post()
-  public async createUser(@Body() userDto: CreateUserDto): Promise<User> {
+  public async createUser(@Body() userDto: CreateUserDto): Promise<GenericResponse> {
     return this.usersService.create(userDto);
   }
 
@@ -106,7 +104,7 @@ export class UsersController {
   public async updateUser(
     @Param("id", ParseIntPipe) id: number,
     @Body() userDto: UpdateUserDto,
-  ): Promise<User> {
+  ): Promise<GenericResponse> {
     return this.usersService.update(id, userDto);
   }
 
@@ -126,7 +124,7 @@ export class UsersController {
   public async deleteUser(@Param(
     "id",
     ParseIntPipe,
-  ) id: number): Promise<User> {
+  ) id: number): Promise<GenericResponse> {
     return this.usersService.delete(id);
   }
 }

@@ -18,6 +18,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { Permission } from "@prisma/client";
+import { GenericResponse } from "../common/api";
 import { PermissionsRequired, Serialize } from "../common/decorators";
 import { PermissionsEnum } from "../common/enums";
 import { JwtAuthGuard, PermissionsRequiredGuard } from "../common/guards";
@@ -56,12 +57,9 @@ export class PermissionsController {
     description: "Id of the permission",
     name: "id",
   })
-  @Get(":id")
-  public async getPermissionById(@Param(
-    "id",
-    ParseIntPipe,
-  ) id: number): Promise<Permission> {
-    return this.permissionsService.findUniquePermissionById(id);
+  @Get(":guid")
+  public async getPermissionById(@Param("guid") guid: string): Promise<Permission> {
+    return this.permissionsService.findUniquePermissionByGuid(guid);
   }
 
   @ApiOkResponse({
@@ -73,7 +71,7 @@ export class PermissionsController {
   })
   @ApiBody({ type: CreatePermissionDto  })
   @Post()
-  public async createPermission(@Body() createPermissionsDto: CreatePermissionDto): Promise<Permission> {
+  public async createPermission(@Body() createPermissionsDto: CreatePermissionDto): Promise<GenericResponse> {
     return this.permissionsService.createPermission(createPermissionsDto);
   }
 
@@ -86,7 +84,7 @@ export class PermissionsController {
   })
   @ApiBody({ type: UpdatePermissionDto })
   @Patch()
-  public async updatePermission(@Body() updatePermissionDto: UpdatePermissionDto): Promise<Permission> {
+  public async updatePermission(@Body() updatePermissionDto: UpdatePermissionDto): Promise<GenericResponse> {
     return this.permissionsService.updatePermission(updatePermissionDto);
   }
 
@@ -101,11 +99,8 @@ export class PermissionsController {
     description: "Id of the permission",
     name: "id",
   })
-  @Delete(":id")
-  public async deletePermission(@Param(
-    "id",
-    ParseIntPipe,
-  ) id: number): Promise<Permission> {
-    return this.permissionsService.deletePermission(id);
+  @Delete(":guid")
+  public async deletePermission(@Param("guid") guid: string): Promise<GenericResponse> {
+    return this.permissionsService.deletePermission(guid);
   }
 }

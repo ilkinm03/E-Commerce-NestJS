@@ -21,11 +21,6 @@ export class RolesDto {
     type: [PermissionsDto],
   })
   @Expose()
-  @Transform(({ value }) => value?.map(p => (
-    {
-      id: p.permission.id,
-      title: p.permission.title,
-    }
-  )))
+  @Transform(({ value }) => PermissionsDto.transformEntity(value))
   permisisons: PermissionsDto[];
 }

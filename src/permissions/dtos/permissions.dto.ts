@@ -3,11 +3,10 @@ import { Expose } from "class-transformer";
 
 export class PermissionsDto {
   @ApiProperty({
-    description: "Id of the permission",
-    example: 1,
+    description: "Guid of the permission",
   })
   @Expose()
-  id: number;
+  guid: string;
 
   @ApiProperty({
     description: "Title of the permission",

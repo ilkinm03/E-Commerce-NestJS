@@ -4,11 +4,10 @@ import { PermissionsDto } from "../../permissions/dtos";
 
 export class RolesDto {
   @ApiProperty({
-    description: "Id of the role",
-    example: 1,
+    description: "Guid of the role",
   })
   @Expose()
-  id: number;
+  id: string;
 
   @ApiProperty({
     description: "Title of the role",

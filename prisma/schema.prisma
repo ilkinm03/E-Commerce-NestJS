@@ -12,6 +12,7 @@ datasource db {
 
 model User {
   id            Int            @id @default(autoincrement())
+  guid          String         @unique @db.VarChar(36)
   first_name    String
   last_name     String
   email         String         @unique
@@ -23,6 +24,8 @@ model User {
   updated_at    DateTime       @updatedAt
   roles         RolesOnUsers[]
   orders        Order[]
+
+  @@index([guid])
 }
 
 model RolesOnUsers {
@@ -38,19 +41,25 @@ model RolesOnUsers {
 
 model Role {
   id           Int                  @id @default(autoincrement())
+  guid         String               @unique @db.VarChar(36)
   title        String               @unique
   permisisons  PermissionsOnRoles[]
   created_at   DateTime             @default(now())
   updated_at   DateTime             @updatedAt
   RolesOnUsers RolesOnUsers[]
+
+  @@index([guid])
 }
 
 model Permission {
   id         Int                  @id @default(autoincrement())
+  guid       String               @unique @db.VarChar(36)
   title      String               @unique
   roles      PermissionsOnRoles[]
   created_at DateTime             @default(now())
   updated_at DateTime             @updatedAt
+
+  @@index([guid])
 }
 
 model PermissionsOnRoles {
@@ -66,12 +75,15 @@ model PermissionsOnRoles {
 
 model Product {
   id          Int               @id @default(autoincrement())
+  guid        String            @unique @db.VarChar(36)
   title       String            @db.VarChar(64)
   description String            @db.VarChar(128)
   price       Float             @db.Real
   created_at  DateTime          @default(now())
   updated_at  DateTime          @updatedAt
   orders      ProductsOnOrder[]
+
+  @@index([guid])
 }
 
 model ProductsOnOrder {
@@ -87,6 +99,7 @@ model ProductsOnOrder {
 
 model Order {
   id              Int               @id @default(autoincrement())
+  guid            String            @unique @db.VarChar(36)
   order_no        String            @unique
   total_price     Float             @default(0) @db.Real
   user            User              @relation(fields: [userId], references: [id])
@@ -102,4 +115,6 @@ model Order {
   created_at      DateTime          @default(now())
   updated_at      DateTime          @updatedAt
   products        ProductsOnOrder[]
+
+  @@index([guid])
 }

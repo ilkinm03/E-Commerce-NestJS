@@ -3,11 +3,10 @@ import { Expose } from "class-transformer";
 
 export class UserDto {
   @ApiProperty({
-    description: "Id of the user",
-    example: 1,
+    description: "Guid of the user",
   })
   @Expose()
-  id: number;
+  guid: string;
 
   @ApiProperty({
     description: "First name of the user",

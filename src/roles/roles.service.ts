@@ -1,15 +1,19 @@
 import {
-  ConflictException,
-  Injectable,
+  ConflictException, forwardRef, Inject,
+  Injectable, NotFoundException,
 } from "@nestjs/common";
-import { Role } from "@prisma/client";
-import { AddPermissionDto, RemovePermissionDto } from "./dtos";
+import { Role, User } from "@prisma/client";
+import { v4 as uuidv4 } from "uuid";
+import { UsersService } from "../users/users.service";
+import { AddPermissionDto, RemovePermissionDto, CreateRoleDto } from "./dtos";
 import { PrismaService } from "../prisma/prisma.service";
-import { CreateRoleDto } from "./dtos";
 
 @Injectable()
 export class RolesService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+      private readonly prismaService: PrismaService,
+      private readonly usersService: UsersService,
+  ) {}
 
   public async createRole(createRoleDto: CreateRoleDto): Promise<Role> {
     const [roleWithTitle]: Role[] = await this.getRoles(createRoleDto.title);
@@ -17,7 +21,10 @@ export class RolesService {
       throw new ConflictException("role already exists");
     }
     return this.prismaService.role.create({
-      data: createRoleDto,
+      data: {
+        ...createRoleDto,
+        guid: uuidv4(),
+      },
     });
   }
 
@@ -56,12 +63,16 @@ export class RolesService {
     });
   }
 
-  public async getRolesByUserId(userId: number): Promise<Role[]> {
+  public async getRolesByUserGuid(userGuid: string): Promise<Role[]> {
+    const user: Partial<User> = await this.usersService.user(userGuid);
+    if (!user) {
+      throw new NotFoundException("user not found");
+    }
     return this.prismaService.role.findMany({
       where: {
         RolesOnUsers: {
           some: {
-            user_id: userId,
+            user_id: user.id,
           },
         },
       },

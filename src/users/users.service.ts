@@ -1,12 +1,14 @@
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import {
-  ConflictException,
+  ConflictException, forwardRef,
   Inject,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
 import { Prisma, Role, User } from "@prisma/client";
 import { Cache } from "cache-manager";
+import { v4 as uuidv4 } from "uuid";
+import { GenericResponse } from "../common/api";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateGoogleUserDto, CreateUserDto, UpdateUserDto } from "./dtos";
 import { RolesService } from "../roles/roles.service";
@@ -15,7 +17,7 @@ import { RolesService } from "../roles/roles.service";
 export class UsersService {
   constructor(
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
-    private readonly rolesService: RolesService,
+    @Inject(forwardRef(() => RolesService)) private readonly rolesService: RolesService,
     private readonly prismaService: PrismaService,
   ) {}
 
@@ -33,29 +35,29 @@ export class UsersService {
     return users;
   }
 
-  public async user(id: number): Promise<User> {
-    const cachedUser: User = await this.cacheManager.get<User>(`user-${id}`);
+  public async user(guid: string): Promise<User> {
+    const cachedUser: User = await this.cacheManager.get<User>(`user-${guid}`);
     if (cachedUser) {
       return cachedUser;
     }
     const user: User = await this.prismaService.user.findUnique({
       where: {
-        id,
+        guid,
       },
     });
     if (!user) {
       throw new NotFoundException("user not found");
     }
-    await this.cacheManager.set(`user-${id}`, user);
+    await this.cacheManager.set(`user-${guid}`, user);
     return user;
   }
 
-  public async create(userDto: CreateUserDto): Promise<User> {
+  public async create(userDto: CreateUserDto): Promise<GenericResponse> {
     const {
       roles,
       ...userData
     }: CreateUserDto = userDto;
-    const isUserExists: User = await this.prismaService.user.findUnique({
+    const isUserExists: GenericResponse = await this.prismaService.user.findUnique({
       where: {
         email: userData.email,
       },
@@ -67,9 +69,10 @@ export class UsersService {
     if (roleEntities.length !== userDto.roles.length) {
       throw new NotFoundException("role not found");
     }
-    return this.prismaService.user.create({
+    const user: User = await this.prismaService.user.create({
       data: {
         ...userData,
+        guid: uuidv4(),
         roles: {
           create: roles.map((roleId: number) => (
             { role: { connect: { id: roleId } } }
@@ -77,31 +80,35 @@ export class UsersService {
         },
       },
     });
+    return { guid: user.guid };
   }
 
-  public async createGoogleUser(userDto: CreateGoogleUserDto): Promise<User> {
-    return this.prismaService.user.create({
+  public async createGoogleUser(userDto: CreateGoogleUserDto): Promise<GenericResponse> {
+    const user: User = await this.prismaService.user.create({
       data: {
         password: "",
+        guid: uuidv4(),
         ...userDto,
       },
     });
+    return { guid: user.guid };
   }
 
-  public async update(id: number, userDto: UpdateUserDto): Promise<User> {
-    return this.prismaService.user.update({
+  public async update(id: number, userDto: UpdateUserDto): Promise<GenericResponse> {
+    const user: User = await this.prismaService.user.update({
       where: {
         id,
       },
       data: userDto,
     });
+    return { guid: user.guid };
   }
 
   public async updateRefreshToken(
     id: number,
     refresh_token: string,
-  ): Promise<User> {
-    return this.prismaService.user.update({
+  ): Promise<GenericResponse> {
+    const user: User = await this.prismaService.user.update({
       where: {
         id,
       },
@@ -111,6 +118,7 @@ export class UsersService {
         },
       },
     });
+    return { guid: user.guid };
   }
 
   public async removeRefreshToken(id: number): Promise<Prisma.BatchPayload> {
@@ -127,20 +135,21 @@ export class UsersService {
     });
   }
 
-  public async delete(id: number): Promise<User> {
-    return this.prismaService.user.delete({
+  public async delete(id: number): Promise<GenericResponse> {
+    const user: User = await this.prismaService.user.delete({
       where: {
         id,
       },
     });
+    return { guid: user.guid };
   }
 
   public async updateUserOrders(
     prisma: PrismaService,
     id: number,
     orderId: number,
-  ): Promise<User> {
-    return prisma.user.update({
+  ): Promise<GenericResponse> {
+    const user: User = await prisma.user.update({
       where: {
         id,
       },
@@ -148,5 +157,6 @@ export class UsersService {
         orders: { connect: { id: orderId } },
       },
     });
+    return { guid: user.guid };
   }
 }

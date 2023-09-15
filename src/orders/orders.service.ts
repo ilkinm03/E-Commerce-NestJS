@@ -5,6 +5,7 @@ import {
   ServiceUnavailableException, UnprocessableEntityException,
 } from "@nestjs/common";
 import { Order, Prisma, Product } from "@prisma/client";
+import { v4 as uuidv4 } from "uuid";
 import { PrismaService } from "../prisma/prisma.service";
 import { ProductsService } from "../products/products.service";
 import { UsersService } from "../users/users.service";
@@ -139,6 +140,7 @@ export class OrdersService {
     }: CreateOrderDto = createOrderDto;
     const orderCreateData: Prisma.OrderCreateInput = {
       ...createOrderData,
+      guid: uuidv4(),
       order_no: Date.now().toString(),
       user: { connect: { id: userId } },
     };

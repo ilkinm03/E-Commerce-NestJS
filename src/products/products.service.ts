@@ -7,6 +7,8 @@ import {
 } from "@nestjs/common";
 import { Product } from "@prisma/client";
 import { Cache } from "cache-manager";
+import { v4 as uuidv4 } from "uuid";
+import { GenericResponse } from "../common/api";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateProductDto, UpdateProductDto } from "./dtos";
 
@@ -17,37 +19,45 @@ export class ProductsService {
     private readonly prismaService: PrismaService,
   ) {}
 
-  public async create(productDto: CreateProductDto): Promise<Product> {
-    return this.prismaService.product.create({
-      data: productDto,
+  public async create(productDto: CreateProductDto): Promise<GenericResponse> {
+    const product: Product = await this.prismaService.product.create({
+      data: {
+        ...productDto,
+        guid: uuidv4(),
+      },
     });
+    return { guid: product.guid };
   }
 
-  public async products(): Promise<Product[]> {
+  public async products(): Promise<GenericResponse[]> {
     const cachedProducts: Product[] = await this.cacheManager.get<Product[]>(
       "products");
     if (cachedProducts) {
       return cachedProducts;
     }
-    const products: Product[] = await this.prismaService.product.findMany({});
+    const products: GenericResponse[] = await this.prismaService.product.findMany({
+      select: {
+        guid: true,
+      },
+    });
     await this.cacheManager.set("products", products);
     return products;
   }
 
-  public async product(id: number): Promise<Product> {
-    const cachedProduct: Product = await this.cacheManager.get<Product>(`product-${id}`);
+  public async product(guid: string): Promise<Product> {
+    const cachedProduct: Product = await this.cacheManager.get<Product>(`product-${guid}`);
     if (cachedProduct) {
       return cachedProduct;
     }
     const product: Product = await this.prismaService.product.findUnique({
       where: {
-        id,
+        guid,
       },
     });
     if (!product) {
       throw new NotFoundException("product not found");
     }
-    await this.cacheManager.set(`product-${id}`, product);
+    await this.cacheManager.set(`product-${guid}`, product);
     return product;
   }
 
@@ -61,22 +71,22 @@ export class ProductsService {
   }
 
   public async update(
-    id: number,
+    guid: string,
     productDto: UpdateProductDto,
   ): Promise<Product> {
     return this.prismaService.product.update({
       where: {
-        id,
+        guid,
       },
       data: productDto,
     });
   }
 
-  public async delete(id: number): Promise<Product> {
-    const product: Product = await this.product(id);
+  public async delete(guid: string): Promise<GenericResponse> {
+    const product: GenericResponse = await this.product(guid);
     try {
       await this.prismaService.product.delete({
-        where: { id },
+        where: { guid },
       });
       return product;
     } catch (error) {

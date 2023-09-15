@@ -4,11 +4,10 @@ import { ProductDto } from "../../products/dtos";
 
 export class OrderDto {
   @ApiProperty({
-    description: "Id of the order",
-    example: 1,
+    description: "Guid of the order",
   })
   @Expose()
-  id: number;
+  guid: string;
 
   @ApiProperty({
     description: "Products included inside the order",

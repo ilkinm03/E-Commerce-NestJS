@@ -5,11 +5,10 @@ type ProductEntity = { product?: ProductDto };
 
 export class ProductDto {
   @ApiProperty({
-    description: "Id of the product",
-    example: 1,
+    description: "Guid of the product",
   })
   @Expose()
-  id: number;
+  guid: string;
 
   @ApiProperty({
     description: "Title of the product",
@@ -35,7 +34,7 @@ export class ProductDto {
   public static transformEntity(entity: ProductEntity[]): ProductDto[] {
     return entity?.map((value: ProductEntity): ProductDto => (
       {
-        id: value.product.id,
+        guid: value.product.guid,
         title: value.product.title,
         description: value.product.description,
         price: value.product.price,
